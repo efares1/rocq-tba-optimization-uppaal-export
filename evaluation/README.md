@@ -139,3 +139,6 @@
 5. `python make_tables.py`
 
 The machine and the versions used for the article are in `machine.txt`. The setup script uses mutable Ubuntu package and Spot repositories, so rerunning it later may install different versions.
+
+- `run_random_opt.sh` (`random_opt.tsv`): the 100 random formulas of `random_formulas.tsv` through the default pipeline with the optimizer; sizes before and after, exported sizes, `init_free`.
+- `run_export_policies.sh` (`export_policies.tsv`, `export_policies_table.tex`): maximal-delay and `-all-copy` exports side by side on every configuration of `formulas.tsv`.

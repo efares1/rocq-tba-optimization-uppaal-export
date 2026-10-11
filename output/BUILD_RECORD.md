@@ -20,8 +20,8 @@ SHA-256 of every `proof/*.v` file is in `output/rocq/build_info.txt`.
 ## PDFs (as in the commit)
 | File | Pages | SHA-256 |
 |---|---|---|
-| `paper2.pdf` (= `output/pdf/paper2.pdf`) | 19 | `0dcde8148dd319f39224c760d8d1a817b491bb82954d5e474defeda297ca147e` |
-| `paper2_supp.pdf` (= `output/pdf/paper2_supp.pdf`) | 6 | `6bd5866de5a4fcfe9c4ef6a3b052180d904e0b5e04dc41b14d85850f92ac0962` |
+| `paper2.pdf` (= `output/pdf/paper2.pdf`) | 19 | `6f00baa930a0475c5c39ebb19a6e60650694c665d772678c9d3983b4a4b91619` |
+| `paper2_supp.pdf` (= `output/pdf/paper2_supp.pdf`) | 7 | `003abe07cdf0cf3347cbecc2e52abbea28311c8a9e2874fb19273a0fef84ed40` |
 
 Rebuild with `build.ps1` (Windows, MiKTeX) or `reproduce.sh` (proofs, tool, evaluation).
 PDF byte hashes depend on build timestamps; the page counts and extracted text are stable.
