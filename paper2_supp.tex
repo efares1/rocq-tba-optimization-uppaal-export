@@ -87,7 +87,7 @@ Table~\ref{tab:symbolic-before-after} gives, for every benchmark configuration t
 transitions of the optimizer input and of the optimized automaton, and the symbolic transitions of the
 exported automaton with the optimizer disabled and enabled. Both symbolic counts apply the same grouping, so
 their difference is attributable to the optimizer. The values are produced by
-\path{evaluation/make_symbolic_before_after.py} from the raw output of \path{evaluation/run_symbolic_before_after.sh}.
+\path{evaluation/make_symbolic_before_after.py} from the raw output of \path{evaluation/run_symbolic_before_after.sh}. With the front end of the translation article (\texttt{-noweak -norecur}) and the optimizer disabled, the symbolic count equals the number of edges obtained by grouping the transitions of \texttt{compile}$(f)$ by source, target, guard, and resets, as counted in that article, on all 23 configurations that complete within 300 s (F1--F14, R1--R4, N1--N8); R5 does not finish in this setting and R6--R8 do not build. The check is \path{evaluation/run\_chain.sh}, with output in \path{evaluation/chain\_noweak.tsv}.
 \input{evaluation/symbolic_before_after_table}
 
 \section{Reproducing Synthetic Measurements}
