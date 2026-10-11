@@ -14,6 +14,10 @@ fe3f2f69f8ee9dfe613ddac4347483009c241dbd8825a1cbc339bd80b9394738  proof/MTL_to_T
 6ac761c6043aab790c8bec3b619451cd0c070da671f582133b8693b11f040e3c  proof/MTL_to_TBA_Simplify.v
 0d0345feb459879ec287f4ed3871845268e26f88ae1fe78af614dd9909792620  proof/MTL_to_TBA_Symbolic.v
 a37d80b90e444ec89be39ee161ffcbfa6e71bcfa493efd9a95c9fb3ff3c7219c  proof/MTL_to_TBA_Weak.v
-commands (from proof/, WSL 2, coqc/coqchk of Rocq Platform 2025.08):
-  make COQC=$COQC ; $COQC -w -deprecated-missing-stdlib Audit_Revision_20261010.v ; coqchk -silent -o <10 modules>
-exit codes: make 0, audit 0, coqchk 0
+commands, run on a fresh copy of proof/ and tool/ after removing every .vo/.vos/.vok/.glob file
+(equivalent to make clean), WSL 2, Rocq Platform 2025.08 (OCaml 4.14.2):
+  make COQC=$COQC
+  $COQC -w -deprecated-missing-stdlib Audit_Revision_20261010.v
+  coqchk -silent -o <Core Proof Invariants Optimizations Export Initialization Symbolic Recur Weak Negation>
+exit codes: make 0, audit 0, coqchk 0; regenerated tool/src/optim.ml identical to the repository file
+see output/BUILD_RECORD.md for the snapshot, tool versions and PDF hashes
