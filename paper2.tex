@@ -81,7 +81,7 @@ The contributions are:
   \item a Rocq development of language-preserving TBA transformations, including invariant synthesis and propagation, clock and state simplification, transition merging, and disjunctive-invariant elimination;
   \item a preservation theorem for every TBA of the formula-indexed clock interface and every number of optimization rounds, plus a verified export composition whose final guards and invariants are conjunctive;
   \item an extracted implementation and an explicit account of its interface and trust boundaries; and
-  \item a reproducible evaluation on 29 completed optimizer inputs from 31 attempted upstream-generated configurations, 10 direct TBA records designed to exercise the passes, and four system-model configurations, with the input-generation and measurement boundaries stated explicitly.
+  \item a reproducible evaluation on 29 completed optimizer inputs from 31 attempted upstream-generated configurations, 16 directly constructed TBA records designed to exercise the passes, and four system-model configurations, with the input-generation and measurement boundaries stated explicitly.
 \end{itemize}
 Our earlier article, ``A Mechanically Verified Translation of MTL$_{0,\infty}$ into Timed B\"uchi Automata''~\cite{fares_bodeveix_mtl_translation}, establishes the source translation theorem, and this paper reuses its Rocq core and correctness files unchanged. The present paper starts from the resulting TBA and verifies the subsequent optimization and export transformations. The composition theorem in Section~\ref{sec:composition} retains the backend-language contract as a hypothesis; neither the Spot executable nor the XML printer is covered by that theorem.
 

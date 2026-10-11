@@ -203,3 +203,38 @@ Axioms:
 LTL_TO_BUCHI_CORRECT :
   forall (root : mtl) (f : ltl root),
   {A : PBuchi root | forall s : pword root, PBA_accepts A s <-> psat s 0 f}
+MTL_to_exported_correct_recur_weak_with
+     : forall (n : nat) (f : mtl) (A : PBuchi (recur f)) (w : timed_word),
+       (forall s : pword (recur f),
+        PBA_accepts A s <-> psat s 0 (MTL_to_TBA_Weak.weak (T (recur f)))) ->
+       well_formed f ->
+       msat w 0 f <-> DTA_accepts (export (optimize n (compile_with A))) w
+Axioms:
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Description.constructive_definite_description :
+  forall (A : Type) (P : A -> Prop), (exists ! x : A, P x) -> {x : A | P x}
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+MTL_to_exported_correct0_recur_weak_with
+     : forall (n : nat) (f : mtl) (A : PBuchi (recur f)) (w : timed_word),
+       (forall s : pword (recur f),
+        PBA_accepts A s <-> psat s 0 (MTL_to_TBA_Weak.weak (T (recur f)))) ->
+       well_formed f ->
+       init_free (export (optimize n (compile_with A))) = true ->
+       msat w 0 f <-> DTA_accepts0 (export (optimize n (compile_with A))) w
+Axioms:
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Description.constructive_definite_description :
+  forall (A : Type) (P : A -> Prop), (exists ! x : A, P x) -> {x : A | P x}
+Classical_Prop.classic : forall P : Prop, P \/ ~ P

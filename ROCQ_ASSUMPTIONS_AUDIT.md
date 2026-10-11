@@ -40,3 +40,11 @@ of the Core file. Not covered by Rocq: correctness of Spot and of its graph-to-r
 transcription (backend contract), the parser and printers of `mtl2tba`, the floating-point
 realization of real bounds in extracted code, the extraction mechanism, and the use of the
 printed automata in UPPAAL or TChecker.
+
+## Regeneration from the final snapshot
+
+`output/rocq/` was regenerated from the final sources: `make` (extraction to
+`tool/src/optim.ml`, identical to the file in the repository ignoring line endings),
+`Audit_Revision_20261010.v` (17 `Print Assumptions` blocks, including the two
+`_recur_weak_with` theorems), and `coqchk` on the ten modules, with Rocq 9.0.1 (Platform
+2025.08). `output/rocq/build_info.txt` lists the SHA-256 of every `proof/*.v` file used.

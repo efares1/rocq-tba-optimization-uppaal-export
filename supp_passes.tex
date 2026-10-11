@@ -96,8 +96,8 @@ applies one propagation step.  The tool repeats the rounds until the
 automaton is structurally equal to the previous one, as an OCaml value, or
 until 50 rounds have been performed; the bound guarantees termination, and the
 theorem holds for every number of steps, whether or not a fixpoint is
-reached.  On our benchmarks, the rounds reach a fixpoint after at most five
-rounds.
+reached.  On our benchmarks, the rounds reach a fixpoint after at most six
+rounds (six for R6, at most five for every other completed configuration).
 The invariant computation at one location is summarized in the article's
 Figure~\ref{main-fig:main-inv-unified}.
 
