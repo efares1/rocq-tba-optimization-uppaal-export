@@ -1,0 +1,103 @@
+\begin{table*}[t]
+\centering
+\caption{Scope comparison with representative prior work. “Not reported” means not stated in the cited source, not that no related result exists.}
+\label{tab:related-work}
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.17\textwidth}>{\raggedright\arraybackslash}p{0.26\textwidth}>{\raggedright\arraybackslash}p{0.34\textwidth}>{\raggedright\arraybackslash}p{0.19\textwidth}@{}}
+\toprule
+Prior work & Method and setting & Stated guarantee and mechanization & Difference from this paper\\
+\midrule
+Daws--Yovine~\cite{daws_yovine_rtss1996} & Active-clock reduction and equal-clock merging in timed automata & Algorithmic reduction with case studies; proof-assistant mechanization not reported & Prior clock reduction; no generic TBA pipeline theorem\\
+Guha--Narayan--Arun-Kumar~\cite{guha_narayan_arunkumar_concur2014} & Minimum-clock timed-bisimilar automaton & Least clock count; doubly exponential construction; mechanization not reported & Stronger minimization objective, not verified passes/export\\
+Yalcinkaya--Aydin Gol~\cite{yalcinkaya_aydin_gol_formalise2019} & Position-based reduction preserving design parameters & Timed bisimilarity and measured clock reduction; mechanization not reported & Direct clock-reduction prior art; this work verifies a composed pipeline\\
+Badban--Leue--Smaus~\cite{badban_etal_wing2010} & CIPM invariant generation and idle-transition pruning; split discussed as a direction & Predicate-abstraction method; no split theorem or mechanization reported & Relevant disjunction problem, not generic TBA split preservation\\
+De Wulf--Doyen--Raskin~\cite{de_wulf_doyen_raskin_fm2005} & AASAP phase copies, watcher product, multirectangular predicates & Safety equivalence for specialized encoding; mechanization not reported & Phase copies, not one-copy-per-disjunct TBA normalization\\
+Bodeveix--Filali~\cite{[BF03]} & UPPAAL disjunctive-invariant workshop item & Guarantee and mechanization not verifiable from accessible record & Relevant prior item; no priority claim\\
+Wimmer--Lammich / MUNTA~\cite{munta_tacas18,munta_formats19} & Timed-automata reachability checking & Verified checker and executable refinement in Isabelle/HOL & Proves analysis, not TBA optimization/export\\
+Wimmer--Herbreteau--van de Pol~\cite{wimmer_herbreteau_vandepol_formats2020} & Timed B\"uchi emptiness certificates & Sound, complete certificate checking in Isabelle/HOL & Verifies checking, not automaton transformation\\
+This paper & Iterated optimizer, two split policies, conjunctive explicit/symbolic export & Rocq language preservation for each finite round/export and target-shape theorems & Every TBA of the formula-indexed clock interface; excludes adapters and XML\\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Prior work already contains several of the algorithmic ideas used here.
+Daws and Yovine combine active-clock detection with detection of clocks
+that remain equal, and evaluate the resulting state-space reductions
+~\cite{daws_yovine_rtss1996}. Their work is direct prior art for clock
+reduction; Paper~2 does not claim that removing inactive clocks or merging
+equal clocks is a new algorithm. The Rocq development instead proves its
+specific dead-reset and synchronous-reset transformations as timed-word
+language equivalences and composes them with the other TBA passes.
+
+Subsequent work makes the distinction between a local reduction pass and a
+global clock-minimization objective especially clear. Guha, Narayan, and
+Arun-Kumar construct a timed-bisimilar automaton with the least possible
+number of clocks, with a doubly exponential worst-case construction
+~\cite{guha_narayan_arunkumar_concur2014}. Yalcinkaya and Aydin Gol give a
+position-based clock-reduction method that preserves design parameters and
+prove timed bisimilarity~\cite{yalcinkaya_aydin_gol_formalise2019}. These
+results are stronger objectives than Paper~2's particular synchronous-reset
+merge: Paper~2 does not minimize clock count, but proves language preservation
+for this pass together with the interacting TBA transformations.
+Neither cited article describes a proof-assistant mechanization. The present
+work's claim is the Rocq-checked transformation composition, not a new clock
+reduction algorithm.
+
+Badban, Leue, and Smaus's CIPM algorithm derives control-location
+invariants using existing invariants and constraints on incoming transitions,
+and prunes idle transitions~\cite{badban_etal_wing2010}. Their target is
+invariant generation for predicate abstraction, not a generic B\"uchi-language
+preservation contract. They explicitly note that UPPAAL does not admit
+disjunctive location invariants, approximate such joins by \texttt{true}, and
+mention location splitting as a possible direction; the paper does not give
+the split construction formalized here~\cite{badban_etal_wing2010}. This
+observation is direct prior context for the representation problem, so the
+present work does not claim that splitting locations is a new idea.
+
+De Wulf, Doyen, and Raskin study a compositional encoding of the
+almost-ASAP (AASAP) semantics for Elastic controllers
+~\cite{de_wulf_doyen_raskin_fm2005}. Their construction uses location copies
+to represent phases of the controller encoding, coordinated with watcher
+automata through internal labels. The input controllers have no location
+invariants and use closed guards; the timed-automaton formalism allows
+multirectangular (disjunctive rectangular) predicates.
+The construction uses \texttt{PreIn}, \texttt{In}, \texttt{Out}, and
+\texttt{PostOut} phase copies, coordinated by internal labels such as
+$\tau$, $\mathit{in}_\ell$, and $\mathit{out}_\ell$. These copies do not
+correspond one-to-one with invariant disjuncts: an \texttt{Out} location may
+retain a multirectangular invariant. Their correctness theorem relates the
+specialized AASAP controller-safety semantics to the synchronized encoding.
+This is relevant prior work on timed-automaton representation and disjunctive
+predicates, but it does not prove generic timed-word Büchi-language
+preservation or conjunctive output shape for arbitrary TBAs. Paper~2 does not
+claim that location copying is new; it proves two split policies for its
+formal DTA interface and introduces no silent labels.
+
+Bodeveix and Filali's NWPT 2003 item is bibliographically listed as
+``About disjunctive invariants in UPPAAL''~\cite{[BF03]}. The available
+repository entry does not provide a stable full text or detailed algorithm
+description that can be checked against the present construction. We
+therefore do not make a priority claim against that item; the authors should
+replace or supplement the reference if they have access to a technical report.
+
+Mechanized timed-automata work addresses adjacent guarantees. Wimmer and
+Lammich refine timed-automata reachability checking to an executable
+Isabelle/HOL model checker, MUNTA~\cite{munta_tacas18,munta_formats19}.
+Wimmer, Herbreteau, and van de Pol verify an Isabelle certifier for emptiness
+certificates of timed B\"uchi automata, including certificates extracted
+from TChecker and Imitator runs~\cite{wimmer_herbreteau_vandepol_formats2020}.
+These works verify checking or result certification; they do not establish
+the optimization and representation-transformation contracts proved here.
+
+
+
+
+The defensible novelty claim is primarily mechanization and composition:
+individual simplification and invariant-generation ideas have substantial
+prior art, while this development proves their interaction and finite-round
+language preservation for the formal TBA interface, proves disjunctive
+invariant output shape, and connects the results to extracted code. The
+29 completed upstream inputs and directly constructed synthetic suite
+support benchmark-specific practical claims only. They do not establish
+broad third-party format coverage or universal efficiency.

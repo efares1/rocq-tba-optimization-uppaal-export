@@ -1,0 +1,365 @@
+\subsection{Questions, evidence, and setup}
+The evaluation asks four separate questions. First, which structures do the
+verified optimization passes remove or simplify? Second, what size and timing
+cost does conversion to conjunctive guards and invariants add? Third, do the
+packaged system checks behave as intended? Fourth, does optimization affect a
+matched downstream check? Internal output shape is a Rocq theorem; external
+checker verdicts and resource use are experimental evidence. The matched
+TChecker cases below show unchanged exploration on systems whose exported
+models are byte-identical before and after optimization; they do not establish
+a general cost improvement.
+
+We retain the 31-attempt F/R/N benchmark as an upstream-generated
+group. The optimizer input is the automaton after reset completion, shown as
+Comp. in Table~\ref{tab:optimizer-benchmarks}. Of the 31 attempted
+configurations, 29 completed this upstream stage and supplied an optimizer
+input; R7 and R8 timed out before the measured boundary. Formula rewriting, Spot
+configuration, cube expansion, relaxation, and reset completion happen
+upstream; their effects are not credited to the optimizer. The runs use the
+tool's default front end, which before translation rewrites
+$\Box\Diamond_{\ge d}\varphi$ into $\Box\Diamond\varphi$ and
+$\Diamond\Box_{\ge d}\varphi$ into $\Diamond\Box\varphi$, and which replaces
+the Until of the clauses of upper-bounded hatted Until by a weak Until. The
+end-to-end theorem for this front end is
+\path{MTL_to_exported_correct0_recur_weak_with}
+(\path{MTL_to_TBA_Recur.v}); the optimizer theorems are unaffected, since
+they hold for every input TBA of the interface. Results
+come from the repository's five-run medians on Ubuntu 26.04/WSL 2, an Intel
+Core i7-8650U at 1.9 GHz with 11.7 GB memory, OCaml 5.4.0, Rocq 9.0.1, and
+Spot 2.16. The fresh run used five repetitions per completed configuration
+and a 300-second limit per attempt. Its run log, machine record, summary
+table, and generated automata are preserved under
+\path{evaluation/runs/2026-10-10-full-eval-v1/}.
+\input{evaluation/optimizer_table}
+
+Across the 29 completed inputs, the sum of reachable transition counts falls
+from 20,230 at the post-reset-completion boundary to 1,512 after optimization
+(an aggregate reduction of 92.53\%). Nineteen cases have fewer transitions
+and ten are unchanged. This aggregate is strongly skewed: R6 contributes
+14,985 of the 18,718 removed transitions, so the percentage is not a typical
+per-instance reduction. Active clocks used in guards or resets sum from 77
+to 75; only two cases reduce this count. The export stage has a different
+effect: explicit transitions sum from 1,512 to 3,221, an increase of
+113.03\%; six exports grow and 23 have the same count as their optimized
+input. Export-size change is reported separately from optimization and is
+not counted as an optimization regression.
+\input{evaluation/optimizer_aggregate_table}
+The family breakdown shows how concentrated these totals are. The six
+completed bounded-response R cases account for 18,441 of the 18,718 removed
+transitions (98.52\%); the F and N groups remove 60 and 217, respectively.
+The R group's explicit export grows from 1,089 to 2,796 transitions, while
+the F group grows by two and the N group is unchanged. Thus the aggregate
+optimizer reduction is driven mainly by one bounded-response family, and the
+export expansion is a separate representation cost concentrated in that same
+family.
+
+Part of this reduction only re-merges the cubes that Spot emits one by one.
+With symbolic grouping applied in both runs, the optimizer alone lowers the
+symbolic transition count (\texttt{-n 0} against the default) from 729 to 356
+(51\%) on the 27 configurations whose unoptimized export completes: from 389
+to 228 on F and N, and from 340 to 128 on R1--R4. It is smaller in 17 and
+equal in 10 (supplement). The unoptimized export of R5 and R6 does not finish
+within 300 s, whereas the optimized pipeline completes them in 2.6 s and 40.6 s.
+
+\begin{figure*}[t]
+\centering
+\input{figures/fig_R_transition_counts}
+\caption{Post-reset-completion input, optimized TBA, and maximal-delay
+explicit export for R1--R6. The logarithmic vertical axis makes the R6
+concentration visible. These are the fresh five-run-median structural
+counts; Comp. is the optimizer boundary, regardless of whether an upstream
+Spot count happens to match it.}
+\label{fig:R-transition-counts}
+\end{figure*}
+
+\subsection{Optimization effects on the generated group}
+In R6, Spot emits 64 states and 15,625 cube-split transitions. The recorded
+post-reset-completion optimizer input also has 64 locations and 15,625
+transitions; the equality of these two edge counts is specific to R6, and the
+Comp. column is the authoritative optimizer boundary. Six optimization
+rounds reduce the transition relation to 640 edges and retain six clocks.
+Export then produces 1,837 explicit edges, 63 invariant-bearing locations,
+and 3,360 clock-difference guard occurrences; symbolic grouping represents
+the output with 448 transitions. The larger explicit edge count results from
+splitting disjunctive guards and adding entry conditions for invariant copies.
+It measures the cost of the target representation, not a reversal of the
+optimizer's reduction. In the fresh run, median optimizer and export times
+are 19.345 s and 13.410 s, respectively. The October 7 archived run reported
+25.091 s and 14.572 s with the same structural counts and round count; both
+five-run records are retained, and no specific cause for the timing change
+is assigned. The generated-group table separately reports the
+stage after reset completion so that upstream processing is not folded into
+these optimizer measurements.
+
+The same distinction matters for the other generated inputs. For example,
+F11 starts from its actual five-location, eleven-transition, two-clock TBA
+after reset completion; two rounds yield four reachable locations, seven
+transitions, and one clock. N8 spends most of its end-to-end time in Spot,
+whereas its recorded optimizer and exporter stages take 0.32 s and 0.83 s.
+These cases show that the optimizer's cost depends on its input relation and
+that the upstream producer can dominate total tool time. They do not support
+a general runtime or size bound. With the tool's \texttt{-spot-level low}
+option (default unchanged), N8 takes 9.2 s instead of 107.5 s, and the total
+over the 29 completed configurations falls from 162 s to 54 s; optimized sizes
+are identical except for F5 and F6 (25 to 27 symbolic transitions), and R6,
+dominated by the optimizer and the export, is unaffected.
+
+\subsection{External output-size reference}
+CASAAL~\cite{casaal_tool} implements the MTL$_{0,\infty}$ construction of
+Li et al.~\cite{li_spin7} and prints automata with Boolean transition labels.
+It is not an interchangeable optimizer: it builds its automata by its own
+construction, so its sizes are a reference for the final output, not a
+baseline for the optimization passes. We ran it with mutually exclusive
+events, which matches the one-event-per-position words of our semantics, and
+compare reachable locations and symbolic transitions of our optimized output
+with CASAAL's output on the 27 configurations that both tools completed and
+that CASAAL encodes exactly. The counts coincide in 24 cases. For F5 and F6
+our output is larger (7 locations and 25 symbolic transitions against 4 and
+15); for F14 it is smaller (6 and 14 against 8 and 18). Clock counts coincide
+except for F11, where two optimization rounds reduce the two clocks of the
+post-reset-completion input to one while CASAAL uses two, and F8, where the
+difference comes from the upstream rewriting of $\Box\Diamond_{\ge2}p$ into
+$\Box\Diamond p$ and is not credited to the optimizer. In R6 both outputs
+have 64 locations and 448 symbolic transitions, whereas the optimizer input
+has 15,625 explicit transitions. Whether the two tools accept the same timed
+words is a question about the translation, examined in the earlier
+article~\cite{fares_bodeveix_mtl_translation}; this comparison concerns sizes only.
+
+\subsection{Matched comparison of the two export policies}
+We reran R2--R6 once with each verified split policy while holding the
+optimized automaton fixed. For every formula, the optimized TBA DOT files
+were byte-identical across the two invocations. The table reports the
+explicit-edge counts, diagonal guard atoms, and single-run exporter time
+returned by the tool. Across these five inputs, all-copy export has no
+explicit-edge growth beyond the optimized relation and adds no diagonal
+guards. Maximal-delay export adds explicit edges in each case and introduces
+2--3,360 diagonal guard atoms. This is a measured property of this benchmark
+family, not a general size theorem.
+
+\begin{table*}[t]
+\centering
+\caption{Matched maximal-delay and all-copy exports for R2--R6. The two
+policies receive byte-identical optimized TBA graphs. Export time is one
+observed run per row and policy; it is descriptive and should not be read as
+a stable speed ranking.}
+\label{tab:generated-export-policy}
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lrrrrrrr@{}}
+\toprule
+ID & Optimized $E$ & Max-delay $E$ & All-copy $E$ & Max-delay diagonal atoms & All-copy diagonal atoms & Max-delay time (s) & All-copy time (s)\\
+\midrule
+R2 & 16 & 19 & 16 & 2 & 0 & 0.004 & 0.010\\
+R3 & 44 & 67 & 44 & 30 & 0 & 0.020 & 0.028\\
+R4 & 112 & 217 & 112 & 192 & 0 & 0.296 & 0.210\\
+R5 & 272 & 651 & 272 & 880 & 0 & 1.745 & 1.379\\
+R6 & 640 & 1,837 & 640 & 3,360 & 0 & 14.135 & 14.074\\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Both policies retain the same reachable location counts, active clock counts,
+and invariant-bearing locations on these runs. Peak RSS was measured for
+each full tool process, including Spot and optimization: 17.3/17.3 MB for R2
+and 108.5/107.2 MB for R6 (maximal-delay/all-copy). These process-level
+measurements do not isolate export memory. The observed exporter times also
+have no consistent ordering: all-copy takes longer for R2/R3 and shorter for
+R4/R5, with similar times for R6. The R6 policy comparison uses the same
+15,625-edge post-reset-completion input and six-round, 640-edge optimized
+TBA; the upstream Spot count is context, not the optimizer's pre-state.
+
+\subsection{Translator-independent synthetic TBA suite}
+To exercise the interface without the MTL translator, we construct
+16 small synthetic automata directly as Rocq-representation TBA records in
+\path{evaluation/synthetic_tba_bench.ml}. Their clocks are named by the six
+timed subformulas of a fixed formula, the conjunction of six hatted primitive
+formulas over three events; this formula is never translated and serves only
+as a supply of six clock names. Locations, event labels, unary guards,
+resets, and accepting locations are written by hand for each record. The suite is explicitly
+synthetic: it does not parse a third-party format and is not evidence of
+industrial-model performance. Its records cover redundant guards,
+contradictory guards, unsatisfiable labels, a source with no incoming edge,
+dead resets, synchronously reset clocks, duplicate transitions, equivalent
+locations, a disjunctive-invariant export, a stable no-change input, and
+targeted backward/forward propagation and pass-interaction cases.
+\input{evaluation/synthetic_tba_table}
+
+The harness reports counts after every pass in every round and checks that
+its profiled pass sequence is structurally equal to the extracted
+\texttt{optimize\_step} on each round. It also times the unprofiled iterative
+optimizer and export as means over 200 repeated in-memory calls per model.
+Standalone process RSS ranges from 6,184 to 6,484 KiB. These short timings
+and small, purpose-built records are microbenchmark evidence only; the raw
+pass table and per-model RSS file are supplied for reproduction. Per-pass
+times are recorded but are too small to support fine-grained speed rankings.
+
+The targeted examples exercise both bound-propagation directions. Backward
+synthesis tightens an incoming $x\leq5$ guard to $x\leq2$. Forward
+propagation adds an entry lower bound $x\geq2$ to outgoing edges. In the
+forward-cascade input, an alternate $x\leq10$ branch prevents backward
+synthesis from creating the contradiction; forward propagation makes the
+$x\leq1$ branch contradictory, and the following pruning stages remove its
+unentered chain. Omitting forward propagation retains all seven input edges,
+while the full optimizer leaves four. A separate backward cascade isolates
+that pass. Table~\ref{tab:synthetic-interactions} shows input/output counts
+and leave-one-operation-out effects.
+
+The normalization/reset example removes a tautological $x\geq0$ guard before
+dead-reset analysis, allowing its reset and active clock to be removed. The
+synchronous-clock example first merges the clocks, then a later round detects
+the conflicting $x\geq5\land x\leq3$ guard and prunes the branch. Other
+records measure unsatisfiable-label elimination, no-incoming-source pruning,
+transition subsumption, and equivalent-location merging. The no-incoming
+operation is a local predecessor test, not full graph reachability. These
+interactions explain the iterative design; preservation for each finite
+iteration count follows from the proved pass composition.
+\input{evaluation/synthetic_tba_interaction_table}
+
+Table~\ref{tab:synchronous-trace} gives the measured stage interaction for
+the largest synchronously reset synthetic input. Unsatisfiable-label removal
+first reduces the relation from seven edges to five. Dead-reset elimination
+then lowers the active-clock count from six to four. The synchronous-clock
+pass changes the synthesized invariant, and the next round's dead-reset pass
+removes the remaining redundant resets, leaving one active clock. This is a
+measurement of the extracted implementation; the language-preservation
+claim follows separately from the proved pass composition.
+\input{evaluation/synthetic_tba_round_trace_table}
+
+The synthetic disjunctive-invariant case is unchanged by optimization, then
+grows from three locations and three transitions to nine locations and six
+explicit transitions after export. The output has conjunctive invariants and
+six diagonal guard atoms that select maximal-delay copies. This is a
+measured size cost of export; the output-shape guarantee itself follows from
+\texttt{export\_guards\_conjunctive} and
+\texttt{export\_invariants\_conjunctive}.
+
+\subsection{Pass ablation and parameterized synthetic families}
+To measure pass interactions, we repeated the same composite pipeline while
+omitting one operation at a time from sixteen fixed synthetic input records. Each
+modified composite was iterated to structural stability (at most 50 changed
+rounds); this is a measurement driver, not a separate Rocq theorem about the
+ablated variants. The full variant was checked for structural equality with
+the extracted optimizer on each input. Table~\ref{tab:synthetic-ablation}
+reports aggregate reachable locations, total transition records, active
+clocks, changed rounds, and median repeated-call time. The raw TSV gives each
+record and its counts under every pass.
+
+The aggregate ablation shows effects that selected records were designed to
+expose. Relative to the full variant (33 transitions and nine active clocks
+summed across the suite), omitting backward synthesis leaves 34 transitions
+and ten clocks; omitting forward propagation leaves 36 transitions; and
+omitting contradiction removal leaves 43 transitions. Omitting pruning of
+sources without incoming edges leaves 39 transitions. Normalization and
+dead-reset omission raise the aggregate active-clock count to 12 and 13,
+respectively. Omitting synchronous-clock merging leaves 35 edges and 11
+clocks; omitting transition merging leaves 35 edges, while omitting
+equivalent-location merging leaves one more reachable location. These are
+descriptive differences on a deliberately selected synthetic suite, not
+estimates of typical pass effects. Per-call medians are too small for
+fine-grained pass runtime rankings; process RSS includes runtime overhead.
+\input{evaluation/synthetic_tba_ablation_table}
+
+We also constructed five size-parameterized families directly in the formal
+TBA representation, without a third-party parser. Table~\ref{tab:parameterized-synthetic}
+reports every tested size. In the duplicate-edge family, inputs grow from
+two to 33 edges while optimization reduces each nontrivial instance to two.
+The unreachable-cascade sweep includes sizes 1--50, 51, and 64; rows at the
+50-round driver cap are marked and report capped, not necessarily stable,
+outputs. A separate probe confirms that size 51 still changes on round 51
+(two edges remain after round 50), while size 64 still changes on rounds 51
+and 52. The size-50 chain has one edge after round 50 and is unchanged by
+round 51, but the driver conservatively warns because it did not perform that
+stability check. Synchronously reset families with two to six clocks reduce
+to one active clock in two rounds.
+The disjunctive-invariant export grows from 10 edges and 10 diagonal guard
+occurrences at $k=2$ to 68 edges and 204 diagonal occurrences at $k=6$.
+These counts expose representation costs in a deliberately constructed
+stress family; they are not industrial-model measurements or a complexity
+bound. For every finite number of rounds, including a capped result,
+\texttt{optimize\_accepts} preserves language. Reaching the iteration cap
+does not justify calling that result a fixed point. Per-size intermediate
+records and the exact cap probe are preserved in the dated run artifacts.
+\input{evaluation/synthetic_tba_parameterized_table}
+
+\subsection{UPPAAL and timed-liveness checks}
+The four UPPAAL configurations are two parameterized system families: a
+sporadic emitter with minimum separation two (satisfying) or one (violating),
+and a request/response controller with response bound four (satisfying) or
+six (violating). The property query reaches a designated violation sink; it
+does not ask UPPAAL to check B\"uchi acceptance.
+\begin{table*}[t]
+\centering
+\caption{UPPAAL safety-query results for the two packaged system families. The queries were rerun with the UPPAAL 5.0.0 verifier (\texttt{verifyta}) on the packaged models; the verdicts are identical to the earlier archived ones.}
+\label{tab:uppaal-results}
+\scriptsize
+\begin{tabular}{@{}lllc@{}}
+\toprule
+Family & Configuration & Query & Verdict\\
+\midrule
+Sporadic emitter & Minimum separation $2$ & \texttt{E<> P.A4} & Not satisfied (expected)\\
+Sporadic emitter & Minimum separation $1$ & \texttt{E<> P.A4} & Satisfied (violation trace)\\
+Request/response & Response bound $4$ & \texttt{E<> P.A4} & Not satisfied (expected)\\
+Request/response & Response bound $6$ & \texttt{E<> P.A4} & Satisfied (violation trace)\\
+\bottomrule
+\end{tabular}
+\end{table*}
+The system-only \texttt{A[] not deadlock} query is satisfied for
+all four models; that result does not establish time divergence. The packaged
+traces show the violating event pairs. The result files contain verdicts and
+traces, not before/after optimization runtimes, memory, zone, or state counts,
+so they demonstrate use of the exported models rather than a quantified
+model-checking speedup.
+
+The eight queries (four reachability, four deadlock) were rerun with
+UPPAAL 5.0.0 (revision 714BA9DB36F49691, June 2023) on the packaged models;
+all eight verdicts coincide with the archived ones.
+
+For liveness, we reran the separate TChecker timed B\"uchi emptiness case and
+added a matched before/after comparison. Before uses zero optimizer rounds;
+after requests the tool's 50-round maximum. Both formula-generated outputs
+satisfy \texttt{init\_free}=1, so their zero clock initialization matches the
+TChecker product's zero-start convention for these cases. The system template
+was extracted from the archived UPPAAL model by the unverified
+\texttt{tck\_normalize\_system.py} adapter. The same system, property
+automaton, event synchronization, strict timestamp process, time-divergence
+process, and TChecker settings were used on both sides.
+
+\begin{table*}[t]
+\centering
+\caption{Matched TChecker timed-B\"uchi emptiness before and after the optimizer. State counts are stored/visited; runtime is the checker's reported time and peak RSS is the whole TChecker process. The exported XML and product automata are byte-identical within each pair.}
+\label{tab:tchecker-before-after}
+\scriptsize
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+System & \texttt{CYCLE} before/after & Stored/visited states before/after & Visited transitions & Runtime before/after (ms) & Peak RSS before/after (KiB)\\
+\midrule
+Responds within 4 units & false / false & 77/77 / 77/77 & 127/127 & 0.551 / 0.597 & 8,220 / 8,240\\
+May remain busy forever & true / true & 15/7 / 15/7 & 19/19 & 0.182 / 0.181 & 7,988 / 8,024\\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+In both pairs the after run reported one changed optimizer round, but its
+exported XML hash matched the before XML, and the generated TChecker products
+were byte-identical. The checker explored the same states and transitions
+and returned the same verdict. These measurements show no downstream
+structural or exploration change for these examples; they do not demonstrate
+a speedup or a regression. TChecker checks nonemptiness of a timed-B\"uchi
+product over strictly increasing, time-divergent words. This remains distinct
+from UPPAAL's ordinary reachability and deadlock queries. Checker verdicts
+are experiments, not Rocq proofs. XML printing, the adapter, and format
+correspondence remain outside the mechanized interface; Rocq proves shape
+properties only for the internal DTA.
+
+\subsection{Limitations}
+The generated benchmark uses one upstream toolchain and the independent
+suite uses deliberately small synthetic inputs. The independent synthetic
+families demonstrate direct applicability to selected input shapes,
+but do not establish broad empirical support for arbitrary automata. No
+verified third-party parser or broad external TBA corpus is included. Export can grow both the
+state and transition representations. The matched TChecker study is limited
+to two response-system cases whose exported products were identical, and
+therefore gives no evidence of a performance benefit. Performance conclusions are limited to
+these measured inputs. The preservation theorems are universal only over the
+formal Rocq TBA interface and its timed-word semantics; that scope does not
+extend through an unverified adapter to arbitrary file formats.
