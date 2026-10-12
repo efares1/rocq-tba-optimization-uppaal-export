@@ -166,24 +166,26 @@ End Simplify.
    the simplified formula. *)
 Theorem MTL_to_exported_correct_simp_with :
   forall (n : nat) (f : mtl) (A : PBuchi f) (w : timed_word),
-    (forall s : pword f, PBA_accepts A s <-> psat s 0 (ltl_simp (T f))) ->
+    (forall s : pword f, action_consistent s ->
+       (PBA_accepts A s <-> psat s 0 (ltl_simp (T f)))) ->
     well_formed f ->
     (msat w 0 f <-> DTA_accepts (export (optimize n (compile_with A))) w).
 Proof.
-  intros n f A w HA Hwf. apply MTL_to_exported_correct_with; [|exact Hwf].
-  intro s. rewrite HA. apply ltl_simp_correct.
+    intros n f A w HA Hwf. apply MTL_to_exported_correct_with; [|exact Hwf].
+  intros s Hs. rewrite (HA s Hs). apply ltl_simp_correct.
 Qed.
 
 Theorem MTL_to_exported_correct0_simp_with :
   forall (n : nat) (f : mtl) (A : PBuchi f) (w : timed_word),
-    (forall s : pword f, PBA_accepts A s <-> psat s 0 (ltl_simp (T f))) ->
+    (forall s : pword f, action_consistent s ->
+       (PBA_accepts A s <-> psat s 0 (ltl_simp (T f)))) ->
     well_formed f ->
     init_free (export (optimize n (compile_with A))) = true ->
     (msat w 0 f <-> DTA_accepts0 (export (optimize n (compile_with A))) w).
 Proof.
-  intros n f A w HA Hwf Hfree. apply MTL_to_exported_correct0_with;
+    intros n f A w HA Hwf Hfree. apply MTL_to_exported_correct0_with;
     [|exact Hwf|exact Hfree].
-  intro s. rewrite HA. apply ltl_simp_correct.
+  intros s Hs. rewrite (HA s Hs). apply ltl_simp_correct.
 Qed.
 
 Print Assumptions MTL_to_exported_correct0_simp_with.

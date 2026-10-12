@@ -257,8 +257,8 @@ Qed.
 
 Theorem MTL_to_exported_correct_recur_weak_with :
   forall (n : nat) (f : mtl) (A : PBuchi (recur f)) (w : timed_word),
-    (forall s : pword (recur f),
-        PBA_accepts A s <-> psat s 0 (weak (T (recur f)))) ->
+    (forall s : pword (recur f), action_consistent s ->
+        (PBA_accepts A s <-> psat s 0 (weak (T (recur f))))) ->
     well_formed f ->
     (msat w 0 f <-> DTA_accepts (export (optimize n (compile_with A))) w).
 Proof.
@@ -269,8 +269,8 @@ Qed.
 
 Theorem MTL_to_exported_correct0_recur_weak_with :
   forall (n : nat) (f : mtl) (A : PBuchi (recur f)) (w : timed_word),
-    (forall s : pword (recur f),
-        PBA_accepts A s <-> psat s 0 (weak (T (recur f)))) ->
+    (forall s : pword (recur f), action_consistent s ->
+        (PBA_accepts A s <-> psat s 0 (weak (T (recur f))))) ->
     well_formed f ->
     init_free (export (optimize n (compile_with A))) = true ->
     (msat w 0 f <-> DTA_accepts0 (export (optimize n (compile_with A))) w).

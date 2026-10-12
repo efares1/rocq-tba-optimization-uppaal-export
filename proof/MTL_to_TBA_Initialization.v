@@ -303,7 +303,8 @@ End Initialization.
 
 Theorem MTL_to_exported_correct0_with :
   forall (n : nat) (f : mtl) (A : PBuchi f) (w : timed_word),
-    (forall s : pword f, PBA_accepts A s <-> psat s 0 (T f)) ->
+    (forall s : pword f, action_consistent s ->
+       (PBA_accepts A s <-> psat s 0 (T f))) ->
     well_formed f ->
     init_free (export (optimize n (compile_with A))) = true ->
     (msat w 0 f <-> DTA_accepts0 (export (optimize n (compile_with A))) w).

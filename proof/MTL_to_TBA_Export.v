@@ -2129,7 +2129,8 @@ Print Assumptions MTL_to_exported_correct.
    automaton returned by Spot: no project axiom is used. *)
 Theorem MTL_to_exported_correct_with :
   forall (n : nat) (f : mtl) (A : PBuchi f) (w : timed_word),
-    (forall s : pword f, PBA_accepts A s <-> psat s 0 (T f)) ->
+    (forall s : pword f, action_consistent s ->
+       (PBA_accepts A s <-> psat s 0 (T f))) ->
     well_formed f ->
     (msat w 0 f <-> DTA_accepts (export (optimize n (compile_with A))) w).
 Proof.
@@ -2146,7 +2147,8 @@ Print Assumptions MTL_to_exported_correct_with.
    and the generic optimization/export results above. *)
 Theorem MTL_to_exported_all_correct_with :
   forall (n : nat) (f : mtl) (A : PBuchi f) (w : timed_word),
-    (forall s : pword f, PBA_accepts A s <-> psat s 0 (T f)) ->
+    (forall s : pword f, action_consistent s ->
+       (PBA_accepts A s <-> psat s 0 (T f))) ->
     well_formed f ->
     (msat w 0 f <-> DTA_accepts (export_all (optimize n (compile_with A))) w).
 Proof.

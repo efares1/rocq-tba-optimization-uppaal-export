@@ -132,7 +132,8 @@ FunctionalExtensionality.functional_extensionality_dep :
 Classical_Prop.classic : forall P : Prop, P \/ ~ P
 MTL_to_TBA_correct_with
      : forall (f : mtl) (A : PBuchi f) (w : timed_word),
-       (forall s : pword f, PBA_accepts A s <-> psat s 0 (T f)) ->
+       (forall s : pword f,
+        action_consistent (root:=f) s -> PBA_accepts A s <-> psat s 0 (T f)) ->
        well_formed f -> msat w 0 f <-> TBA_accepts (compile_with A) w
 Axioms:
 ClassicalDedekindReals.sig_forall_dec :
@@ -147,7 +148,8 @@ Description.constructive_definite_description :
 Classical_Prop.classic : forall P : Prop, P \/ ~ P
 MTL_to_exported_correct_with
      : forall (n : nat) (f : mtl) (A : PBuchi f) (w : timed_word),
-       (forall s : pword f, PBA_accepts A s <-> psat s 0 (T f)) ->
+       (forall s : pword f,
+        action_consistent (root:=f) s -> PBA_accepts A s <-> psat s 0 (T f)) ->
        well_formed f ->
        msat w 0 f <-> DTA_accepts (export (optimize n (compile_with A))) w
 Axioms:
@@ -163,7 +165,8 @@ Description.constructive_definite_description :
 Classical_Prop.classic : forall P : Prop, P \/ ~ P
 MTL_to_exported_correct0_with
      : forall (n : nat) (f : mtl) (A : PBuchi f) (w : timed_word),
-       (forall s : pword f, PBA_accepts A s <-> psat s 0 (T f)) ->
+       (forall s : pword f,
+        action_consistent (root:=f) s -> PBA_accepts A s <-> psat s 0 (T f)) ->
        well_formed f ->
        init_free (export (optimize n (compile_with A))) = true ->
        msat w 0 f <-> DTA_accepts0 (export (optimize n (compile_with A))) w
@@ -180,7 +183,8 @@ Description.constructive_definite_description :
 Classical_Prop.classic : forall P : Prop, P \/ ~ P
 MTL_to_exported_all_correct_with
      : forall (n : nat) (f : mtl) (A : PBuchi f) (w : timed_word),
-       (forall s : pword f, PBA_accepts A s <-> psat s 0 (T f)) ->
+       (forall s : pword f,
+        action_consistent (root:=f) s -> PBA_accepts A s <-> psat s 0 (T f)) ->
        well_formed f ->
        msat w 0 f <->
        DTA_accepts (export_all (optimize n (compile_with A))) w
@@ -198,14 +202,18 @@ Classical_Prop.classic : forall P : Prop, P \/ ~ P
 LTL_TO_BUCHI_CORRECT
      : forall (root : mtl) (f : ltl root),
        {A : PBuchi root
-       | forall s : pword root, PBA_accepts A s <-> psat s 0 f}
+       | forall s : pword root,
+         action_consistent (root:=root) s -> PBA_accepts A s <-> psat s 0 f}
 Axioms:
 LTL_TO_BUCHI_CORRECT :
   forall (root : mtl) (f : ltl root),
-  {A : PBuchi root | forall s : pword root, PBA_accepts A s <-> psat s 0 f}
+  {A : PBuchi root
+  | forall s : pword root,
+    action_consistent (root:=root) s -> PBA_accepts A s <-> psat s 0 f}
 MTL_to_exported_correct_recur_weak_with
      : forall (n : nat) (f : mtl) (A : PBuchi (recur f)) (w : timed_word),
        (forall s : pword (recur f),
+        action_consistent (root:=recur f) s ->
         PBA_accepts A s <-> psat s 0 (MTL_to_TBA_Weak.weak (T (recur f)))) ->
        well_formed f ->
        msat w 0 f <-> DTA_accepts (export (optimize n (compile_with A))) w
@@ -223,6 +231,7 @@ Classical_Prop.classic : forall P : Prop, P \/ ~ P
 MTL_to_exported_correct0_recur_weak_with
      : forall (n : nat) (f : mtl) (A : PBuchi (recur f)) (w : timed_word),
        (forall s : pword (recur f),
+        action_consistent (root:=recur f) s ->
         PBA_accepts A s <-> psat s 0 (MTL_to_TBA_Weak.weak (T (recur f)))) ->
        well_formed f ->
        init_free (export (optimize n (compile_with A))) = true ->

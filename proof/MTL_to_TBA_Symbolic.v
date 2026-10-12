@@ -430,7 +430,8 @@ End Symbolic.
 (* End-to-end correctness of the symbolic automaton. *)
 Theorem MTL_to_symbolic_correct_with :
   forall (n : nat) (f : mtl) (A : PBuchi f) (w : timed_word),
-    (forall s : pword f, PBA_accepts A s <-> psat s 0 (T f)) ->
+    (forall s : pword f, action_consistent s ->
+       (PBA_accepts A s <-> psat s 0 (T f))) ->
     well_formed f ->
     (msat w 0 f <-> SDTA_accepts (symbolic (export (optimize n (compile_with A)))) w).
 Proof.
@@ -440,7 +441,8 @@ Qed.
 
 Theorem MTL_to_symbolic_correct0_with :
   forall (n : nat) (f : mtl) (A : PBuchi f) (w : timed_word),
-    (forall s : pword f, PBA_accepts A s <-> psat s 0 (T f)) ->
+    (forall s : pword f, action_consistent s ->
+       (PBA_accepts A s <-> psat s 0 (T f))) ->
     well_formed f ->
     init_free (export (optimize n (compile_with A))) = true ->
     (msat w 0 f <-> SDTA_accepts0 (symbolic (export (optimize n (compile_with A)))) w).

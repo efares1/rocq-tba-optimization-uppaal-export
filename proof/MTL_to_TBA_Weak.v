@@ -157,7 +157,8 @@ End Weak.
 (* The compiled automaton of an automaton that is correct for weak (T f). *)
 Theorem MTL_to_TBA_correct_weak_with :
   forall (f : mtl) (A : PBuchi f) (w : timed_word),
-    (forall s : pword f, PBA_accepts A s <-> psat s 0 (weak (T f))) ->
+    (forall s : pword f, action_consistent s ->
+       (PBA_accepts A s <-> psat s 0 (weak (T f)))) ->
     well_formed f ->
     (msat w 0 f <-> TBA_accepts (compile_with A) w).
 Proof.
@@ -173,7 +174,7 @@ Proof.
     destruct Hm as [rho [Hbase [Hclock Hltl]]].
     apply (proj2 (weak_correct Hclock (T f) 0)) in Hltl.
     apply lsat_psat in Hltl.
-    apply (proj2 (HA (word_of rho))) in Hltl.
+        apply (proj2 (HA (word_of rho) (word_of_action_consistent rho))) in Hltl.
     apply (relax_complete (ltl_atoms (weak (T f)))) in Hltl.
     destruct (complete_complete Hclock Hok Hltl) as [rho' [Hb' [Hc' Ha']]].
     exists rho'. split; [unfold same_base in *; rewrite Hb'; exact Hbase|].
@@ -183,14 +184,16 @@ Proof.
     exists rho. split; [exact Hbase|]. split; [exact Hclock|].
     apply (proj1 (weak_correct Hclock (T f) 0)).
     apply lsat_psat.
-    apply (relax_sound (A := A)).
-    + intros s' Hs'. apply HA. exact Hs'.
+        apply (relax_sound (A := A)).
+    + apply word_of_action_consistent.
+    + intros s' Hcs' Hs'. exact (proj1 (HA s' Hcs') Hs').
     + exact (complete_sound Hok Htba).
 Qed.
 
 Theorem MTL_to_exported_correct_weak_with :
   forall (n : nat) (f : mtl) (A : PBuchi f) (w : timed_word),
-    (forall s : pword f, PBA_accepts A s <-> psat s 0 (weak (T f))) ->
+    (forall s : pword f, action_consistent s ->
+       (PBA_accepts A s <-> psat s 0 (weak (T f)))) ->
     well_formed f ->
     (msat w 0 f <-> DTA_accepts (export (optimize n (compile_with A))) w).
 Proof.
@@ -202,7 +205,8 @@ Qed.
 
 Theorem MTL_to_exported_correct0_weak_with :
   forall (n : nat) (f : mtl) (A : PBuchi f) (w : timed_word),
-    (forall s : pword f, PBA_accepts A s <-> psat s 0 (weak (T f))) ->
+    (forall s : pword f, action_consistent s ->
+       (PBA_accepts A s <-> psat s 0 (weak (T f)))) ->
     well_formed f ->
     init_free (export (optimize n (compile_with A))) = true ->
     (msat w 0 f <-> DTA_accepts0 (export (optimize n (compile_with A))) w).
