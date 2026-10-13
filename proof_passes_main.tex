@@ -270,14 +270,23 @@ The other unions are disjunctive; they are formed by the export
 
 \paragraph{Locations.}
 A location $\ell'$ is merged into a location $\ell$ when both are accepting or
-both are not, and when every transition leaving $\ell'$ has a twin leaving
-$\ell$, and conversely: same label, guard, and resets, compared as sets, and
-same target once $\ell'$ is replaced by $\ell$.  The transitions entering
+both are not, and when (i) every transition leaving $\ell'$ is subsumed by a
+transition leaving $\ell$, and (ii) every transition leaving $\ell$ is subsumed
+by one leaving $\ell'$.  A transition $u$ subsumes $t$ when it has a weaker
+label, the same resets, the same target once $\ell'$ is replaced by $\ell$, and
+every constraint of its guard is implied by a constraint of the guard of $t$.
+In (i) the guard of $t$ is conjoined with the \emph{entry invariant} of
+$\ell'$: the lower bounds $x\ge m$ that hold at every visit of $\ell'$.  They
+are the entry bounds of Section~\ref{sec:forward}, except that a self-loop of
+$\ell'$ that does not reset $x$ is ignored, because it preserves a lower bound
+(Rocq: \texttt{entry\_\allowbreak{}lb\_\allowbreak{}loop\_\allowbreak{}sound}).
+Both orders of a pair are tried.  The transitions entering
 $\ell'$ are redirected to $\ell$, and those leaving $\ell'$ are removed.  A run
 of the original automaton becomes a run of the merged one by replacing $\ell'$
-by $\ell$; conversely, a run of the merged automaton is followed in the
-original one, taking in $\ell'$ the twin of the transition taken in $\ell$
+by $\ell$, using (i) and the invariant; conversely, a run of the merged
+automaton is followed in the original one, taking in $\ell'$ a transition that
+subsumes the one taken in $\ell$, by (ii)
 (Rocq: \texttt{merge\_\allowbreak{}states\_\allowbreak{}all\_\allowbreak{}accepts}; ``state'' in a Rocq name
 means location).  The condition on the B\"uchi marking is necessary: merging
-an accepting location with a non-accepting twin would accept runs that visit only the latter infinitely
+an accepting location with a non-accepting one would accept runs that visit only the latter infinitely
 often.

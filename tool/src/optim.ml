@@ -1224,6 +1224,32 @@ let set_incl d l1 l2 =
 let set_eqb d l1 l2 =
   (&&) (set_incl d l1 l2) (set_incl d l2 l1)
 
+(** val free_loop : mtl -> int -> clock -> tba_transition -> bool **)
+
+let free_loop root l x t0 =
+  if (fun eq a l -> List.exists (eq a) l) (clock_eq_dec root) x t0.bt_resets
+  then false
+  else (=) t0.bt_source l
+
+(** val entry_lb_loop : mtl -> tBA -> int -> clock -> float option **)
+
+let entry_lb_loop root a l x =
+  min_all
+    (List.append
+      (if (=) l a.tba_init then (Some (float_of_int 0)) :: [] else [])
+      (List.map (fun t0 -> entry_bound root t0 x)
+        (List.filter (fun t0 -> not (free_loop root l x t0))
+          (incoming root a l))))
+
+(** val entry_guard_loop : mtl -> tBA -> int -> guard **)
+
+let entry_guard_loop root a l =
+  List.map (fun x ->
+    match entry_lb_loop root a l x with
+    | Some m ->
+      Some { guard_clock = x; guard_comparison = CGe; guard_bound = m }
+    | None -> None) (entry_clocks root a l)
+
 (** val red : int -> int -> int -> int **)
 
 let red p q0 s =
@@ -1235,24 +1261,36 @@ let redirect _ p q0 t0 =
   { bt_source = t0.bt_source; bt_label = t0.bt_label; bt_guard = t0.bt_guard;
     bt_resets = t0.bt_resets; bt_target = (red p q0 t0.bt_target) }
 
-(** val sim :
-    mtl -> int -> int -> tba_transition -> tba_transition -> bool **)
+(** val guard_implied : mtl -> guard -> guard -> bool **)
 
-let sim root p q0 t0 t' =
+let guard_implied root g g' =
+  List.for_all (fun o ->
+    match o with
+    | Some k' ->
+      List.exists (fun o2 ->
+        match o2 with
+        | Some k -> implies_c root k k'
+        | None -> false) g
+    | None -> true) g'
+
+(** val sim :
+    mtl -> int -> int -> guard -> tba_transition -> tba_transition -> bool **)
+
+let sim root p q0 g t0 t' =
   (&&)
     ((&&)
-      ((&&) (set_eqb alit_dec t0.bt_label t'.bt_label)
-        (set_eqb (item_dec root) t0.bt_guard t'.bt_guard))
+      ((&&) (set_incl alit_dec t'.bt_label t0.bt_label)
+        (guard_implied root (List.append t0.bt_guard g) t'.bt_guard))
       (set_eqb (clock_eq_dec root) t0.bt_resets t'.bt_resets))
     ((=) (red p q0 t0.bt_target) (red p q0 t'.bt_target))
 
-(** val covers : mtl -> tBA -> int -> int -> int -> int -> bool **)
+(** val covers : mtl -> tBA -> int -> int -> guard -> int -> int -> bool **)
 
-let covers root a p q0 s s' =
+let covers root a p q0 g s s' =
   List.for_all (fun t0 ->
     (||) (not ((=) t0.bt_source s))
       (List.exists (fun t' ->
-        (&&) ((=) t'.bt_source s') (sim root p q0 t0 t')) a.tba_transitions))
+        (&&) ((=) t'.bt_source s') (sim root p q0 g t0 t')) a.tba_transitions))
     a.tba_transitions
 
 (** val in_nat : int -> int list -> bool **)
@@ -1269,8 +1307,8 @@ let states_mergeable root a p q0 =
         ((&&) ((&&) (not ((=) p q0)) ((<) p a.tba_nstates))
           ((<) q0 a.tba_nstates))
         ((=) (in_nat p a.tba_accepting) (in_nat q0 a.tba_accepting)))
-      (covers root a p q0 q0 p))
-    (covers root a p q0 p q0)
+      (covers root a p q0 (entry_guard_loop root a q0) q0 p))
+    (covers root a p q0 [] p q0)
 
 (** val merge_states : mtl -> int -> int -> tBA -> tBA **)
 
@@ -1289,7 +1327,7 @@ let try_merge_states root p q0 a =
 (** val state_pairs : int -> (int * int) list **)
 
 let state_pairs n =
-  List.filter (fun pq -> (<) (fst pq) (snd pq))
+  List.filter (fun pq -> not ((=) (fst pq) (snd pq)))
     ((fun l1 l2 -> List.concat_map (fun x -> List.map (fun y -> (x, y)) l2) l1)
       ((fun s n -> List.init n (fun i -> s + i)) 0 n)
       ((fun s n -> List.init n (fun i -> s + i)) 0 n))
@@ -1305,18 +1343,6 @@ let merge_states_all root a =
 let same_ends root t0 u =
   (&&) ((&&) ((=) t0.bt_source u.bt_source) ((=) t0.bt_target u.bt_target))
     (beq (List.equal (clock_eq_dec root)) t0.bt_resets u.bt_resets)
-
-(** val guard_implied : mtl -> guard -> guard -> bool **)
-
-let guard_implied root g g' =
-  List.for_all (fun o ->
-    match o with
-    | Some k' ->
-      List.exists (fun o2 ->
-        match o2 with
-        | Some k -> implies_c root k k'
-        | None -> false) g
-    | None -> true) g'
 
 (** val subsumes : mtl -> tba_transition -> tba_transition -> bool **)
 

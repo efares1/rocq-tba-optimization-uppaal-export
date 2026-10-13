@@ -25,11 +25,22 @@ backend contract, the full evaluation was repeated; the archived runs are
 and `evaluation/runs/2026-10-13-tchecker-before-after/`. Report: `PAPER2_EVALUATION_REPORT.md`,
 section 11.
 
+## Merging of locations under the entry invariant, 2026-10-13
+`merge_states_all` (`MTL_to_TBA_Optimizations.v`) compares the guards of two locations by
+subsumption under the entry invariant of the merged location (`entry_lb_loop_sound`) instead of
+by equality. Fresh build of `proof/` (no compiled objects), audit and `coqchk` on the ten
+modules exit 0; the audit output and the `coqchk` context summary are identical to the previous
+ones (four standard axioms for `merge_states_all_accepts`); `tool/src/optim.ml` was regenerated
+by the extraction and pruning of the Makefile. `evaluation/test_entry_invariant_merging.sh`
+checks the optimized sizes of F1, F11, F12, F13 and the TChecker checks P1, P2, S.
+The tables and aggregate figures of the article are those of the run of 2026-10-12/13 until the
+full evaluation is repeated with this optimizer.
+
 ## PDFs (as in the commit)
 | File | Pages | SHA-256 |
 |---|---|---|
-| `paper2.pdf` (= `output/pdf/paper2.pdf`) | 20 | `56d5f26124c4f2a3cca9916398968b46031bcf2513f4eeaab65f750839548953` |
-| `paper2_supp.pdf` (= `output/pdf/paper2_supp.pdf`) | 7 | `0a2be8372ec18600d97f3c6479b5f57db97e7de899909dda5e490d8a17e31493` |
+| `paper2.pdf` (= `output/pdf/paper2.pdf`) | 20 | `a448c6ed9dd0e3784b4d9761256fe703fae677f916b0a0781a928f9266e9468d` |
+| `paper2_supp.pdf` (= `output/pdf/paper2_supp.pdf`) | 7 | `1ac2d59dbe6fa524fcd7b1a8c16d766ca7fc217f118e9981712f823faccd0111` |
 
 Rebuild with `build.ps1` (Windows, MiKTeX) or `reproduce.sh` (proofs, tool, evaluation).
 PDF byte hashes depend on build timestamps; the page counts and extracted text are stable.

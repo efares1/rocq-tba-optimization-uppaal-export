@@ -1596,6 +1596,111 @@ Qed.
 (* ---------------------------------------------------------------------- *)
 (* Merging of equivalent states                                           *)
 
+(* Entry invariant of a location.  A self-loop of [l] that does not reset [x]
+   preserves every lower bound on [x], so it is not an entry of [x] into [l].
+   Every other entering transition (and the initial entry) bounds [x] from
+   below: the bound holds at every event at which the run is in [l]. *)
+Definition free_loop (l : nat) (x : Clock root) (t : tba_transition root) : bool :=
+  if In_dec (@clock_eq_dec root) x (bt_resets t) then false
+  else Nat.eqb (bt_source t) l.
+
+Definition entry_lb_loop (A : TBA root) (l : nat) (x : Clock root) : option R :=
+  min_all ((if Nat.eqb l (tba_init A) then [Some 0] else []) ++
+           map (fun t => entry_bound t x)
+               (filter (fun t => negb (free_loop l x t)) (incoming A l))).
+
+Lemma entry_lb_loop_sound :
+  forall (A : TBA root) (rho : ext_word root) (run : nat -> nat),
+    clock_consistent rho ->
+    run 0%nat = tba_init A ->
+    (forall i, exists t,
+        In t (tba_transitions A) /\
+        bt_source t = run i /\ bt_target t = run (S i) /\
+        tba_transition_enabled rho i t) ->
+    forall i x m, entry_lb_loop A (run i) x = Some m -> m <= ew_val rho i x.
+Proof.
+  intros A rho run Hcc Hinit Hsteps i x m. revert m.
+  destruct Hcc as [Hnn Hstep].
+  induction i as [|j IH]; intros m Hm.
+  - assert (Hin : In (Some 0)
+        ((if Nat.eqb (run 0%nat) (tba_init A) then [Some 0] else []) ++
+         map (fun t => entry_bound t x)
+             (filter (fun t => negb (free_loop (run 0%nat) x t))
+                     (incoming A (run 0%nat))))).
+    { rewrite Hinit, Nat.eqb_refl. left. reflexivity. }
+    destruct (min_all_le Hm Hin) as [b [Hb Hmb]].
+    injection Hb as <-.
+    pose proof (Hnn 0%nat x). lra.
+  - destruct (Hsteps j) as [t [Hin [Hsrc [Hdst [_ [Hguard Hres]]]]]].
+    specialize (Hstep j x).
+    pose proof (stay_nonneg rho (S j)) as Hst. simpl in Hst.
+    destruct (free_loop (run (S j)) x t) eqn:Hfl.
+    + unfold free_loop in Hfl.
+      destruct (In_dec (@clock_eq_dec root) x (bt_resets t)) as [HZ|HZ];
+        [discriminate|].
+      apply Nat.eqb_eq in Hfl.
+      assert (Hrj : run j = run (S j)) by (rewrite <- Hsrc; exact Hfl).
+      assert (Hr : ew_reset rho j x = false).
+      { destruct (ew_reset rho j x) eqn:E; [|reflexivity].
+        exfalso. apply HZ. apply (proj1 (Hres x)). exact E. }
+      rewrite Hr in Hstep.
+      rewrite <- Hrj in Hm.
+      pose proof (IH m Hm) as Hih. lra.
+    + assert (Hinc : In t (filter (fun t0 => negb (free_loop (run (S j)) x t0))
+                                  (incoming A (run (S j))))).
+      { apply filter_In. split.
+        - unfold incoming. apply filter_In. split; [exact Hin|].
+          rewrite Hdst. apply Nat.eqb_refl.
+        - rewrite Hfl. reflexivity. }
+      assert (Hin2 : In (entry_bound t x)
+          ((if Nat.eqb (run (S j)) (tba_init A) then [Some 0] else []) ++
+           map (fun t0 => entry_bound t0 x)
+               (filter (fun t0 => negb (free_loop (run (S j)) x t0))
+                       (incoming A (run (S j)))))).
+      { apply in_or_app. right.
+        apply (in_map (fun t0 => entry_bound t0 x)). exact Hinc. }
+      destruct (min_all_le Hm Hin2) as [b [Hb Hmb]].
+      unfold entry_bound in Hb.
+      destruct (In_dec (@clock_eq_dec root) x (bt_resets t)) as [HZ|HZ].
+      * injection Hb as <-.
+        assert (Hr : ew_reset rho j x = true) by (apply (proj2 (Hres x)); exact HZ).
+        rewrite Hr in Hstep. lra.
+      * assert (Hr : ew_reset rho j x = false).
+        { destruct (ew_reset rho j x) eqn:E; [|reflexivity].
+          exfalso. apply HZ. apply (proj1 (Hres x)). exact E. }
+        rewrite Hr in Hstep.
+        pose proof (lb_guard_sound Hguard (eq_sym (eq_sym Hb))) as Hlb.
+        lra.
+Qed.
+
+Definition entry_guard_loop (A : TBA root) (l : nat) : guard root :=
+  map (fun x =>
+         match entry_lb_loop A l x with
+         | Some m => Some {| guard_clock := x; guard_comparison := CGe;
+                             guard_bound := m |}
+         | None => None
+         end)
+      (entry_clocks A l).
+
+Lemma entry_guard_loop_holds :
+  forall (A : TBA root) (rho : ext_word root) (run : nat -> nat),
+    clock_consistent rho ->
+    run 0%nat = tba_init A ->
+    (forall i, exists t,
+        In t (tba_transitions A) /\
+        bt_source t = run i /\ bt_target t = run (S i) /\
+        tba_transition_enabled rho i t) ->
+    forall i, Forall (guard_item_holds rho i) (entry_guard_loop A (run i)).
+Proof.
+  intros A rho run Hcc Hinit Hsteps i.
+  apply Forall_forall. intros o Ho.
+  unfold entry_guard_loop in Ho. apply in_map_iff in Ho.
+  destruct Ho as [x [<- _]].
+  destruct (entry_lb_loop A (run i) x) as [m|] eqn:Hm; [|exact I].
+  simpl. unfold clock_constraint_holds. simpl.
+  pose proof (entry_lb_loop_sound Hcc Hinit Hsteps Hm) as H. lra.
+Qed.
+
 (* [q] is merged into [p]: transitions entering [q] are redirected to [p],
    and the transitions leaving [q] are removed.  This is allowed when [p] and
    [q] have the same acceptance status and the same outgoing transitions,
@@ -1618,58 +1723,84 @@ Definition redirect (p q : nat) (t : tba_transition root) : tba_transition root 
   {| bt_source := bt_source t; bt_label := bt_label t; bt_guard := bt_guard t;
      bt_resets := bt_resets t; bt_target := red p q (bt_target t) |}.
 
-(* Labels, guards, and resets are compared as sets. *)
-Definition sim (p q : nat) (t t' : tba_transition root) : bool :=
-  set_eqb alit_dec (bt_label t) (bt_label t') &&
-  set_eqb item_dec (bt_guard t) (bt_guard t') &&
+(* Every constraint of [g'] is implied by a constraint of [g]. *)
+Definition guard_implied (g g' : guard root) : bool :=
+  forallb (fun o => match o with
+                    | None => true
+                    | Some k' => existsb (fun o2 => match o2 with
+                                                    | Some k => implies_c k k'
+                                                    | None => false end) g
+                    end) g'.
+
+Lemma guard_implied_holds :
+  forall (rho : ext_word root) i g g',
+    guard_implied g g' = true ->
+    Forall (guard_item_holds rho i) g -> Forall (guard_item_holds rho i) g'.
+Proof.
+  intros rho i g g' H Hg. unfold guard_implied in H. rewrite forallb_forall in H.
+  rewrite Forall_forall in *. intros [k'|] Ho; [|exact I].
+  specialize (H _ Ho). simpl in H. apply existsb_exists in H.
+  destruct H as [[k|] [Hk E]]; [|discriminate].
+  pose proof (Hg _ Hk) as Hh. simpl in *. apply cc_holds_at in Hh. apply cc_holds_at.
+  exact (implies_c_sound E Hh).
+Qed.
+
+(* [t'] subsumes [t]: its label is weaker, every constraint of its guard is
+   implied by a constraint of the guard of [t], its resets are the same set,
+   and its target is the same once [q] is redirected to [p].  Whenever [t] is
+   enabled, so is [t'].  This replaces the equality of labels and guards. *)
+Definition sim (p q : nat) (g : guard root) (t t' : tba_transition root) : bool :=
+  set_incl alit_dec (bt_label t') (bt_label t) &&
+  guard_implied (bt_guard t ++ g) (bt_guard t') &&
   set_eqb (@clock_eq_dec root) (bt_resets t) (bt_resets t') &&
   Nat.eqb (red p q (bt_target t)) (red p q (bt_target t')).
 
-(* A transition with fewer constraints and the same resets is enabled
-   whenever the first one is. *)
-Lemma enabled_set :
-  forall (rho : ext_word root) i (t t' : tba_transition root),
-    incl (bt_label t') (bt_label t) -> incl (bt_guard t') (bt_guard t) ->
+Lemma enabled_sub :
+  forall (rho : ext_word root) i (g : guard root) (t t' : tba_transition root),
+    incl (bt_label t') (bt_label t) ->
+    guard_implied (bt_guard t ++ g) (bt_guard t') = true ->
     (forall x, In x (bt_resets t) <-> In x (bt_resets t')) ->
+    Forall (guard_item_holds rho i) g ->
     tba_transition_enabled rho i t -> tba_transition_enabled rho i t'.
 Proof.
-  intros rho i t t' Hl Hg Hr [H1 [H2 H3]]. unfold tba_transition_enabled.
-  split; [exact (label_incl Hl H1)|]. split; [exact (guard_incl Hg H2)|].
-  intro x. rewrite (H3 x). apply Hr.
+  intros rho i g t t' Hl Hg Hr Hgi [H1 [H2 H3]]. unfold tba_transition_enabled.
+  split; [exact (label_incl Hl H1)|].
+  split; [|intro x; rewrite (H3 x); apply Hr].
+  apply (guard_implied_holds Hg). apply Forall_app. split; assumption.
 Qed.
 
 Lemma sim_spec :
-  forall p q t t', sim p q t t' = true ->
+  forall p q g t t', sim p q g t t' = true ->
     (forall (rho : ext_word root) i,
+       Forall (guard_item_holds rho i) g ->
        tba_transition_enabled rho i t -> tba_transition_enabled rho i t') /\
-    (forall (rho : ext_word root) i,
-       tba_transition_enabled rho i t' -> tba_transition_enabled rho i t) /\
     red p q (bt_target t) = red p q (bt_target t').
 Proof.
-  intros p q t t' H. unfold sim, set_eqb in H.
+  intros p q g t t' H. unfold sim in H.
   repeat rewrite andb_true_iff in H.
-  destruct H as [[[[L1 L2] [G1 G2]] [R1 R2]] H4].
-  apply set_incl_true in L1. apply set_incl_true in L2.
-  apply set_incl_true in G1. apply set_incl_true in G2.
+  destruct H as [[[L G] R] T].
+  apply set_incl_true in L.
+  unfold set_eqb in R. apply andb_true_iff in R. destruct R as [R1 R2].
   apply set_incl_true in R1. apply set_incl_true in R2.
-  apply Nat.eqb_eq in H4.
-  split; [|split; [|exact H4]]; intros rho i; apply enabled_set; auto;
-    intro x; split; intro Hx; auto.
+  apply Nat.eqb_eq in T.
+  split; [|exact T]. intros rho i Hgi.
+  apply (enabled_sub (g := g)); [exact L | exact G | | exact Hgi].
+  intro x. split; intro Hx; auto.
 Qed.
 
 (* Every transition leaving [s] has a similar transition leaving [s']. *)
-Definition covers (A : TBA root) (p q s s' : nat) : bool :=
+Definition covers (A : TBA root) (p q : nat) (g : guard root) (s s' : nat) : bool :=
   forallb (fun t => negb (Nat.eqb (bt_source t) s) ||
-                    existsb (fun t' => Nat.eqb (bt_source t') s' && sim p q t t')
+                    existsb (fun t' => Nat.eqb (bt_source t') s' && sim p q g t t')
                             (tba_transitions A))
           (tba_transitions A).
 
 Lemma covers_spec :
-  forall A p q s s', covers A p q s s' = true ->
+  forall A p q g s s', covers A p q g s s' = true ->
     forall t, In t (tba_transitions A) -> bt_source t = s ->
-      exists t', In t' (tba_transitions A) /\ bt_source t' = s' /\ sim p q t t' = true.
+      exists t', In t' (tba_transitions A) /\ bt_source t' = s' /\ sim p q g t t' = true.
 Proof.
-  intros A p q s s' H t Ht Hs. unfold covers in H. rewrite forallb_forall in H.
+  intros A p q g s s' H t Ht Hs. unfold covers in H. rewrite forallb_forall in H.
   specialize (H t Ht). rewrite Hs, Nat.eqb_refl in H. simpl in H.
   apply existsb_exists in H. destruct H as [t' [Ht' E]].
   apply andb_true_iff in E. destruct E as [E1 E2]. apply Nat.eqb_eq in E1.
@@ -1688,7 +1819,7 @@ Qed.
 Definition states_mergeable (A : TBA root) (p q : nat) : bool :=
   negb (Nat.eqb p q) && Nat.ltb p (tba_nstates A) && Nat.ltb q (tba_nstates A) &&
   Bool.eqb (in_nat p (tba_accepting A)) (in_nat q (tba_accepting A)) &&
-  covers A p q q p && covers A p q p q.
+  covers A p q (entry_guard_loop A q) q p && covers A p q [] p q.
 
 Definition merge_states (p q : nat) (A : TBA root) : TBA root :=
   {| tba_nstates := tba_nstates A;
@@ -1707,10 +1838,10 @@ Fixpoint build_run (step : nat -> nat -> option nat) (s0 : nat) (i : nat) : nat 
 
 Lemma merge_states_ext :
   forall A p q, states_mergeable A p q = true ->
-    forall rho : ext_word root,
+    forall rho : ext_word root, clock_consistent rho ->
       TBA_ext_accepts A rho <-> TBA_ext_accepts (merge_states p q A) rho.
 Proof.
-  intros A p q Hm rho. unfold states_mergeable in Hm.
+  intros A p q Hm rho Hcc. unfold states_mergeable in Hm.
   repeat rewrite andb_true_iff in Hm.
   destruct Hm as [[[[[Hpq Hp] Hq] Hacc] Hqp] Hpq'].
   apply negb_true_iff, Nat.eqb_neq in Hpq.
@@ -1728,15 +1859,18 @@ Proof.
     + intro i. destruct (Hsteps i) as [Hb [t [Ht [Hs [Hd Hen]]]]].
       split; [exact (Hbound _ Hb)|].
       destruct (Nat.eq_dec (run i) q) as [Eq|Nq].
-      * destruct (covers_spec Hqp Ht (eq_trans Hs Eq)) as [t' [Ht' [Hs' Hsim]]].
-        destruct (sim_spec Hsim) as [Hen1 [_ Et]].
+      * pose proof (entry_guard_loop_holds Hcc Hinit
+                      (fun j => proj2 (Hsteps j)) i) as Hginv.
+        rewrite Eq in Hginv.
+        destruct (covers_spec Hqp Ht (eq_trans Hs Eq)) as [t' [Ht' [Hs' Hsim]]].
+        destruct (sim_spec Hsim) as [Hen1 Et].
         exists (redirect p q t'). split.
         -- apply in_map. apply filter_In. split; [exact Ht'|].
            rewrite Hs'. apply negb_true_iff, Nat.eqb_neq. exact Hpq.
         -- simpl. split; [rewrite Eq, red_q; exact Hs'|].
            split; [rewrite <- Et, Hd; reflexivity|].
            exact (enabled_ext (t := t') (t' := redirect p q t') eq_refl eq_refl eq_refl
-                                (Hen1 rho i Hen)).
+                                (Hen1 rho i Hginv Hen)).
       * exists (redirect p q t). split.
         -- apply in_map. apply filter_In. split; [exact Ht|].
            rewrite Hs. apply negb_true_iff, Nat.eqb_neq. exact Nq.
@@ -1773,10 +1907,10 @@ Proof.
       destruct (Nat.eq_dec (run i) q) as [Eq|Nq].
       - assert (Hsp : bt_source t = p) by (rewrite Hs, <- Hr, Eq; apply red_q).
         destruct (covers_spec Hpq' Ht Hsp) as [t' [Ht' [Hs' Hsim]]].
-        destruct (sim_spec Hsim) as [Hen1 [_ Et]].
+        destruct (sim_spec Hsim) as [Hen1 Et].
         exists t'. split; [exact Ht'|]. split; [rewrite Eq; exact Hs'|].
         split; [rewrite <- Et; exact Hd|].
-        exact (Hen1 rho i Hen).
+        exact (Hen1 rho i (Forall_nil _) Hen).
       - exists t. split; [exact Ht|].
         split; [rewrite Hs, <- Hr; apply red_other; exact Nq|].
         split; [exact Hd | exact Hen]. }
@@ -1809,18 +1943,20 @@ Definition try_merge_states (p q : nat) (A : TBA root) : TBA root :=
   if states_mergeable A p q then merge_states p q A else A.
 
 Definition state_pairs (n : nat) : list (nat * nat) :=
-  filter (fun pq => Nat.ltb (fst pq) (snd pq)) (list_prod (seq 0 n) (seq 0 n)).
+  filter (fun pq => negb (Nat.eqb (fst pq) (snd pq)))
+         (list_prod (seq 0 n) (seq 0 n)).
 
 Definition merge_states_all (A : TBA root) : TBA root :=
   fold_left (fun B pq => try_merge_states (fst pq) (snd pq) B)
             (state_pairs (tba_nstates A)) A.
 
 Lemma try_merge_states_ext :
-  forall p q A (rho : ext_word root),
+  forall p q A (rho : ext_word root), clock_consistent rho ->
     TBA_ext_accepts A rho <-> TBA_ext_accepts (try_merge_states p q A) rho.
 Proof.
-  intros p q A rho. unfold try_merge_states.
-  destruct (states_mergeable A p q) eqn:E; [apply merge_states_ext; exact E | reflexivity].
+  intros p q A rho Hcc. unfold try_merge_states.
+  destruct (states_mergeable A p q) eqn:E;
+    [apply merge_states_ext; [exact E | exact Hcc] | reflexivity].
 Qed.
 
 Theorem merge_states_all_accepts :
@@ -1831,9 +1967,9 @@ Proof.
   revert A. induction ps as [|[p q] ps IH]; intro A; simpl; [reflexivity|].
   rewrite <- IH. unfold TBA_accepts. split.
   - intros [rho [Hb [Hc Ha]]]. exists rho. split; [exact Hb|]. split; [exact Hc|].
-    apply try_merge_states_ext. exact Ha.
+    apply try_merge_states_ext; [exact Hc | exact Ha].
   - intros [rho [Hb [Hc Ha]]]. exists rho. split; [exact Hb|]. split; [exact Hc|].
-    apply (try_merge_states_ext p q). exact Ha.
+    apply (try_merge_states_ext p q); [exact Hc | exact Ha].
 Qed.
 
 (* ---------------------------------------------------------------------- *)
@@ -1896,27 +2032,7 @@ Proof.
   apply beq_true in H3. tauto.
 Qed.
 
-(* Every constraint of [g'] is implied by a constraint of [g]. *)
-Definition guard_implied (g g' : guard root) : bool :=
-  forallb (fun o => match o with
-                    | None => true
-                    | Some k' => existsb (fun o2 => match o2 with
-                                                    | Some k => implies_c k k'
-                                                    | None => false end) g
-                    end) g'.
 
-Lemma guard_implied_holds :
-  forall (rho : ext_word root) i g g',
-    guard_implied g g' = true ->
-    Forall (guard_item_holds rho i) g -> Forall (guard_item_holds rho i) g'.
-Proof.
-  intros rho i g g' H Hg. unfold guard_implied in H. rewrite forallb_forall in H.
-  rewrite Forall_forall in *. intros [k'|] Ho; [|exact I].
-  specialize (H _ Ho). simpl in H. apply existsb_exists in H.
-  destruct H as [[k|] [Hk E]]; [|discriminate].
-  pose proof (Hg _ Hk) as Hh. simpl in *. apply cc_holds_at in Hh. apply cc_holds_at.
-  exact (implies_c_sound E Hh).
-Qed.
 
 (* [u] makes [t] redundant: same ends, weaker label and weaker guard. *)
 Definition subsumes (u t : tba_transition root) : bool :=
