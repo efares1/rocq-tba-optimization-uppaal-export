@@ -28,8 +28,8 @@ section 11.
 ## PDFs (as in the commit)
 | File | Pages | SHA-256 |
 |---|---|---|
-| `paper2.pdf` (= `output/pdf/paper2.pdf`) | 19 | `de1f763fb5e23ebf5d2d2bf11d918da8c5da2e36262fce209f00f0be9c852cab` |
-| `paper2_supp.pdf` (= `output/pdf/paper2_supp.pdf`) | 7 | `0952ca049f97d5224c43741ac2c2431e6e3686b381865fc43ae1b95bb68f0948` |
+| `paper2.pdf` (= `output/pdf/paper2.pdf`) | 19 | `249517447415f74168eced18d0dd40fb7221b785eb93134b1ada6a8fd9261b75` |
+| `paper2_supp.pdf` (= `output/pdf/paper2_supp.pdf`) | 7 | `01993da89725cdecfd71aab6b05c938c6ff414dc36e8e05df77d4489f0e941cf` |
 
 Rebuild with `build.ps1` (Windows, MiKTeX) or `reproduce.sh` (proofs, tool, evaluation).
 PDF byte hashes depend on build timestamps; the page counts and extracted text are stable.
