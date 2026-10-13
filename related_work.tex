@@ -13,7 +13,7 @@ Guha--Narayan--Arun-Kumar~\cite{guha_narayan_arunkumar_concur2014} & Minimum-clo
 Yalcinkaya--Aydin Gol~\cite{yalcinkaya_aydin_gol_formalise2019} & Position-based reduction preserving design parameters & Timed bisimilarity and measured clock reduction; mechanization not reported & Direct clock-reduction prior art; this work verifies a composed pipeline\\
 Badban--Leue--Smaus~\cite{badban_etal_wing2010} & CIPM invariant generation and idle-transition pruning; split discussed as a direction & Predicate-abstraction method; no split theorem or mechanization reported & Relevant disjunction problem, not generic TBA split preservation\\
 De Wulf--Doyen--Raskin~\cite{de_wulf_doyen_raskin_fm2005} & AASAP phase copies, watcher product, multirectangular predicates & Safety equivalence for specialized encoding; mechanization not reported & Phase copies, not one-copy-per-disjunct TBA normalization\\
-Bodeveix--Filali~\cite{[BF03]} & UPPAAL disjunctive-invariant workshop item & Guarantee and mechanization not verifiable from accessible record & Relevant prior item; no priority claim\\
+Bodeveix--Filali~\cite{[BF03]} & Per-disjunct split of UPPAAL disjunctive invariants & Informal; PVS proof announced, ongoing & Prior splitting; no priority claim\\
 Wimmer--Lammich / MUNTA~\cite{munta_tacas18,munta_formats19} & Timed-automata reachability checking & Verified checker and executable refinement in Isabelle/HOL & Proves analysis, not TBA optimization/export\\
 Wimmer--Herbreteau--van de Pol~\cite{wimmer_herbreteau_vandepol_formats2020} & Timed B\"uchi emptiness certificates & Sound, complete certificate checking in Isabelle/HOL & Verifies checking, not automaton transformation\\
 This paper & Iterated optimizer, two split policies, conjunctive explicit/symbolic export & Rocq language preservation for each finite round/export and target-shape theorems & Every TBA of the formula-indexed clock interface; excludes adapters and XML\\
@@ -73,8 +73,9 @@ preservation or conjunctive output shape for arbitrary TBAs. This paper does not
 claim that location copying is new; it proves two split policies for its
 formal DTA interface and introduces no silent labels.
 
-No written record of Bodeveix and Filali's NWPT 2003 item~\cite{[BF03]} is available for
-comparison, so we make no priority claim against it. Our searches for verified or
+Bodeveix and Filali's note~\cite{[BF03]} informally proposes a
+one-copy-per-disjunct split for two disjuncts in UPPAAL and announces a PVS
+proof still ongoing; we make no priority claim for location splitting. Our searches for verified or
 mechanized timed-automata clock reduction and invariant transformations found
 no mechanized composition of such passes.
 
