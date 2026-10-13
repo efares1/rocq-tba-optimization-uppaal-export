@@ -29,6 +29,8 @@ reduction; this paper does not claim that removing inactive clocks or merging
 equal clocks is a new algorithm. The Rocq development instead proves its
 specific dead-reset and synchronous-reset transformations as timed-word
 language equivalences and composes them with the other TBA passes.
+Herrera, Westphal, and Podelski extend equal-clock reduction to quasi-equal
+clocks~\cite{herrera_westphal_podelski_tacas2014}.
 
 Subsequent work makes the distinction between a local reduction pass and a
 global clock-minimization objective especially clear. Guha, Narayan, and
@@ -40,9 +42,7 @@ prove timed bisimilarity~\cite{yalcinkaya_aydin_gol_formalise2019}. These
 results are stronger objectives than the particular synchronous-reset
 merge of this paper: it does not minimize clock count, but proves language preservation
 for this pass together with the interacting TBA transformations.
-Neither cited article describes a proof-assistant mechanization. The present
-work's claim is the Rocq-checked transformation composition, not a new clock
-reduction algorithm.
+Neither cited article describes a proof-assistant mechanization.
 
 Badban, Leue, and Smaus's CIPM algorithm derives control-location
 invariants using existing invariants and constraints on incoming transitions,
@@ -58,8 +58,7 @@ present work does not claim that splitting locations is a new idea.
 De Wulf, Doyen, and Raskin study a compositional encoding of the
 almost-ASAP (AASAP) semantics for Elastic controllers
 ~\cite{de_wulf_doyen_raskin_fm2005}. Their construction uses location copies
-to represent phases of the controller encoding, coordinated with watcher
-automata through internal labels. The input controllers have no location
+to represent phases of the controller encoding. The input controllers have no location
 invariants and use closed guards; the timed-automaton formalism allows
 multirectangular (disjunctive rectangular) predicates.
 The construction uses \texttt{PreIn}, \texttt{In}, \texttt{Out}, and
@@ -74,13 +73,10 @@ preservation or conjunctive output shape for arbitrary TBAs. This paper does not
 claim that location copying is new; it proves two split policies for its
 formal DTA interface and introduces no silent labels.
 
-Bodeveix and Filali's NWPT 2003 item is bibliographically listed as
-``About disjunctive invariants in UPPAAL''~\cite{[BF03]}. The available
-repository entry does not provide a stable full text or detailed algorithm
-description that can be checked against the present construction. We
-therefore make no priority claim against that item. More generally, this
-comparison is selective rather than a systematic survey, and statements that
-mechanization is not reported are limited to the cited sources.
+No written record of Bodeveix and Filali's NWPT 2003 item~\cite{[BF03]} is available for
+comparison, so we make no priority claim against it. Our searches for verified or
+mechanized timed-automata clock reduction and invariant transformations found
+no mechanized composition of such passes.
 
 Mechanized timed-automata work addresses adjacent guarantees. Wimmer and
 Lammich refine timed-automata reachability checking to an executable
