@@ -554,7 +554,7 @@ convenience theorems that discharge that premise using the project axiom.
 The artifact records the separate \texttt{Print Assumptions} results.
 
 In the integrated workflow, the upstream producer supplies a TBA at the
-optimizer boundary after its own construction stages. Paper~1 specifies and
+optimizer boundary after its own construction stages. The earlier article~\cite{fares_bodeveix_mtl_translation} specifies and
 proves the MTL-to-TBA translation; this paper takes that resulting TBA as an
 input and concerns only the subsequent optimizer and exporter. The driver
 iterates optimization until structural stability or a 50-round cap, then
@@ -658,7 +658,7 @@ Rocq optimization or export theorem. The case-study models below
 report the model checks and diagnostic traces for the four packaged systems.
 
 \subsection{Availability}
-This project contains proof sources, extracted implementation, benchmark tables and raw data, reproduction scripts, and UPPAAL case-study models, together with the LaTeX source and build instructions. The invariant, optimization, and export formalization files contain the generic pass results; their theorem names are listed in Table~\ref{tab:post-passes}. The project repository is at \url{https://github.com/efares1/rocq-tba-optimization-uppaal-export}, and the repository of the translation article is at \url{https://github.com/efares1/rocq-mtl-to-tba-translation}. The revisions described here are the releases tagged \texttt{v1.0} in both repositories.
+This project contains proof sources, extracted implementation, benchmark tables and raw data, reproduction scripts, and UPPAAL case-study models, together with the LaTeX source and build instructions. The invariant, optimization, and export formalization files contain the generic pass results; their theorem names are listed in Table~\ref{tab:post-passes}. The project repository is at \url{https://github.com/efares1/rocq-tba-optimization-uppaal-export}, and the repository of the translation article is at \url{https://github.com/efares1/rocq-mtl-to-tba-translation}. The revisions described here are the releases tagged \texttt{v1.1} in both repositories.
 
 \subsection{Build and artifact layout}
 The verified functions are defined under \texttt{proof/} and extracted into

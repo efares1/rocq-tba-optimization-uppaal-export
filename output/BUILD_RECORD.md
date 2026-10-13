@@ -1,7 +1,8 @@
-# Build record of the snapshot tagged `v1.0`
+# Build record of the snapshot tagged `v1.1`
 
-Snapshot: the commit tagged `v1.0` of this repository (the tag is moved to the commit that
-contains this file). Earlier transcripts are not part of the repository.
+Snapshot: the commit tagged `v1.1` of this repository, which is the revision described by
+the article. The tag `v1.0` is an earlier snapshot and is not the described revision. File
+digests of the sources, proofs, evaluation tables and PDFs are in `SNAPSHOT_MANIFEST.txt`.
 
 | Component | Version / value |
 |---|---|
@@ -17,11 +18,18 @@ repository file), the audit `Audit_Revision_20261010.v` (17 `Print Assumptions` 
 including the two `_recur_weak_with` theorems) and `coqchk` on the ten modules all exit 0.
 SHA-256 of every `proof/*.v` file is in `output/rocq/build_info.txt`.
 
+## Evaluation re-run of 2026-10-12/13
+After the explicit printing of negated event atoms (`-explicit-neg`) and the weakened
+backend contract, the full evaluation was repeated; the archived runs are
+`evaluation/runs/2026-10-12-full-eval-v2/`, `evaluation/runs/2026-10-13-generated-split/`
+and `evaluation/runs/2026-10-13-tchecker-before-after/`. Report: `PAPER2_EVALUATION_REPORT.md`,
+section 11.
+
 ## PDFs (as in the commit)
 | File | Pages | SHA-256 |
 |---|---|---|
-| `paper2.pdf` (= `output/pdf/paper2.pdf`) | 19 | `6f00baa930a0475c5c39ebb19a6e60650694c665d772678c9d3983b4a4b91619` |
-| `paper2_supp.pdf` (= `output/pdf/paper2_supp.pdf`) | 7 | `003abe07cdf0cf3347cbecc2e52abbea28311c8a9e2874fb19273a0fef84ed40` |
+| `paper2.pdf` (= `output/pdf/paper2.pdf`) | 19 | `5c9eae0f96657348e9704515f8e8da9529aaf41c2a5c6cba4d6cf5d84ffe60df` |
+| `paper2_supp.pdf` (= `output/pdf/paper2_supp.pdf`) | 7 | `d1688c0fdd7546b673e592645c6e97d1dbc972ff7e168590c93c705142472943` |
 
 Rebuild with `build.ps1` (Windows, MiKTeX) or `reproduce.sh` (proofs, tool, evaluation).
 PDF byte hashes depend on build timestamps; the page counts and extracted text are stable.
