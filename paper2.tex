@@ -455,8 +455,9 @@ statement is
 For every $n\in\Nat$, formula $f$, backend automaton $A$ and timed word $w$,
 \[
 \begin{gathered}
-  \Bigl(\forall s:\mathsf{pword}(f),\Bigr.\\
-  \Bigl.\mathsf{PBA\_accepts}(A,s)\leftrightarrow
+  \Bigl(\forall s:\mathsf{pword}(f),\
+       \mathsf{action\_consistent}(s)\Rightarrow
+       \mathsf{PBA\_accepts}(A,s)\leftrightarrow
        \mathsf{psat}(s,0,\T(f))\Bigr)\ \land\ \mathsf{well\_formed}(f)
   \\
   \Longrightarrow\quad

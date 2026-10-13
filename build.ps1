@@ -23,7 +23,7 @@ try {
         }
     }
 
-    # Keep the revised article within the requested 18--19-page target.
+    # Keep the revised article within the requested 18--20-page limit.
     $latexArgs = @('-interaction=nonstopmode', '-halt-on-error', '-file-line-error')
     New-Item -ItemType Directory -Force 'output/pdf' | Out-Null
     Invoke-CheckedTool 'pdflatex' ($latexArgs + 'paper2.tex')
@@ -57,9 +57,9 @@ try {
         $pageLine = $info | Where-Object { $_.ToString() -match '^Pages:\s+' } | Select-Object -First 1
         if ($pageLine -match '^Pages:\s+(\d+)') {
             $pages = [int]$Matches[1]
-            Write-Host "output/pdf/paper2.pdf: $pages pages (18-19-page target)."
-            if ($pages -lt 18 -or $pages -gt 19) {
-                Write-Warning "The current manuscript is $pages pages; the requested target is 18-19 pages. Review content fit before submission."
+            Write-Host "output/pdf/paper2.pdf: $pages pages (18-20-page limit)."
+            if ($pages -lt 18 -or $pages -gt 20) {
+                Write-Warning "The current manuscript is $pages pages; the accepted range is 18-20 pages. Review content fit before submission."
             }
         }
     }

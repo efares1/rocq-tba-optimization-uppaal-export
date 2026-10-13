@@ -93,7 +93,11 @@ these optimizer measurements.
 The same distinction matters for the other generated inputs. For example,
 F11 starts from its actual four-location, seven-transition, two-clock TBA
 after reset completion; two rounds leave the four locations and seven
-transitions and remove one clock. N8 spends most of its end-to-end time in Spot,
+transitions and remove one clock. The two locations that correspond to
+states 2 and 3 of the earlier article's worked example stay separate: one
+could be dropped, because $x\ge2$ always holds in the second, but location
+merging requires twin transitions and their guards differ
+($x\ge2\land x\le5$ against $x\le5$). N8 spends most of its end-to-end time in Spot,
 whereas its recorded optimizer and exporter stages take 0.26 s and 0.68 s.
 These cases show that the optimizer's cost depends on its input relation and
 that the upstream producer can dominate total tool time. They do not support
