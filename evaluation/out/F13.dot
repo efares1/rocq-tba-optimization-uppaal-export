@@ -4,16 +4,16 @@ digraph TA {
   init [shape=point];
   init -> L1;
   L1 [shape=circle, label="L1"];
-  L4 [shape=doublecircle, label="L4\nx1 <= 2"];
-  L6 [shape=circle, label="L6\nx1 <= 2"];
-  L10 [shape=circle, label="L10\nx1 <= 2"];
-  L1 -> L4 [label="e\nx0, x1 := 0"];
-  L4 -> L4 [label="x0 >= 2 && x1 <= 2: e\nx0, x1 := 0"];
-  L4 -> L6 [label="x1 <= 2: other"];
-  L4 -> L10 [label="x0 >= 2 && x1 <= 2: other"];
-  L6 -> L4 [label="x0 >= 2 && x1 <= 2: e\nx0, x1 := 0"];
-  L6 -> L6 [label="x1 <= 2: other"];
-  L6 -> L10 [label="x0 >= 2 && x1 <= 2: other"];
-  L10 -> L4 [label="x1 <= 2: e\nx0, x1 := 0"];
-  L10 -> L10 [label="x1 <= 2: other"];
+  L2 [shape=doublecircle, label="L2\nx0 <= 2"];
+  L4 [shape=circle, label="L4\nx0 <= 2"];
+  L6 [shape=circle, label="L6\nx0 <= 2"];
+  L1 -> L2 [label="e\nx0 := 0"];
+  L2 -> L2 [label="x0 >= 2 && x0 <= 2: e\nx0 := 0"];
+  L2 -> L4 [label="x0 <= 2: other"];
+  L2 -> L6 [label="x0 >= 2 && x0 <= 2: other"];
+  L4 -> L2 [label="x0 >= 2 && x0 <= 2: e\nx0 := 0"];
+  L4 -> L4 [label="x0 <= 2: other"];
+  L4 -> L6 [label="x0 >= 2 && x0 <= 2: other"];
+  L6 -> L2 [label="x0 <= 2: e\nx0 := 0"];
+  L6 -> L6 [label="x0 <= 2: other"];
 }

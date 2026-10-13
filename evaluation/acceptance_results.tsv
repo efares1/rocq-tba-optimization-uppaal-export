@@ -1,5 +1,5 @@
 id	formula	mode	status	states	edges	acc_sets	time_s
-F1	U	-B	ok	3	6	1	0.17
+F1	U	-B	ok	3	6	1	0.11
 F1	U	-b	ok	2	4	1	0.11
 F1	U	--tgba	ok	2	4	1	0.11
 F1	W	-B	ok	2	4	1	0.11
@@ -65,30 +65,30 @@ F10	U	--tgba	ok	5	12	1	0.11
 F10	W	-B	ok	5	12	1	0.11
 F10	W	-b	ok	5	12	1	0.11
 F10	W	--tgba	ok	5	12	0	0.11
-F11	U	-B	ok	5	11	1	0.11
-F11	U	-b	ok	5	11	1	0.11
-F11	U	--tgba	ok	5	11	1	0.11
-F11	W	-B	ok	5	11	1	0.11
-F11	W	-b	ok	5	11	1	0.11
-F11	W	--tgba	ok	5	11	0	0.11
-F12	U	-B	ok	5	18	1	0.11
-F12	U	-b	ok	4	14	1	0.11
-F12	U	--tgba	ok	4	14	1	0.11
-F12	W	-B	ok	4	14	1	0.11
-F12	W	-b	ok	4	14	1	0.11
-F12	W	--tgba	ok	4	14	0	0.11
-F13	U	-B	ok	6	21	1	0.11
-F13	U	-b	ok	5	16	1	0.11
-F13	U	--tgba	ok	5	16	1	0.11
-F13	W	-B	ok	5	14	1	0.11
-F13	W	-b	ok	5	14	1	0.11
-F13	W	--tgba	ok	5	14	0	0.11
-F14	U	-B	ok	8	29	1	0.11
-F14	U	-b	ok	7	23	1	0.11
-F14	U	--tgba	ok	6	20	2	0.11
-F14	W	-B	ok	6	20	1	0.11
-F14	W	-b	ok	6	20	1	0.11
-F14	W	--tgba	ok	6	20	0	0.11
+F11	U	-B	ok	4	7	1	0.11
+F11	U	-b	ok	4	7	1	0.11
+F11	U	--tgba	ok	4	7	1	0.11
+F11	W	-B	ok	4	7	1	0.11
+F11	W	-b	ok	4	7	1	0.11
+F11	W	--tgba	ok	4	7	0	0.11
+F12	U	-B	ok	4	11	1	0.11
+F12	U	-b	ok	3	8	1	0.11
+F12	U	--tgba	ok	3	8	1	0.11
+F12	W	-B	ok	3	8	1	0.11
+F12	W	-b	ok	3	8	1	0.11
+F12	W	--tgba	ok	3	8	0	0.11
+F13	U	-B	ok	4	9	1	0.11
+F13	U	-b	ok	3	6	1	0.11
+F13	U	--tgba	ok	3	6	1	0.11
+F13	W	-B	ok	3	5	1	0.11
+F13	W	-b	ok	3	5	1	0.11
+F13	W	--tgba	ok	3	5	0	0.11
+F14	U	-B	ok	7	23	1	0.11
+F14	U	-b	ok	6	19	1	0.11
+F14	U	--tgba	ok	5	16	2	0.11
+F14	W	-B	ok	6	18	1	0.11
+F14	W	-b	ok	6	18	1	0.11
+F14	W	--tgba	ok	6	18	0	0.11
 R1	U	-B	ok	3	6	1	0.11
 R1	U	-b	ok	2	4	1	0.11
 R1	U	--tgba	ok	2	4	1	0.11
@@ -113,18 +113,18 @@ R4	U	--tgba	ok	16	256	4	0.11
 R4	W	-B	ok	16	256	1	0.11
 R4	W	-b	ok	16	256	1	0.11
 R4	W	--tgba	ok	16	256	0	0.11
-R5	U	-B	ok	112	3584	1	2.11
+R5	U	-B	ok	112	3584	1	2.21
 R5	U	-b	ok	96	3072	1	0.91
-R5	U	--tgba	ok	32	1024	5	0.81
-R5	W	-B	ok	32	1024	1	0.51
+R5	U	--tgba	ok	32	1024	5	0.91
+R5	W	-B	ok	32	1024	1	0.41
 R5	W	-b	ok	32	1024	1	0.31
 R5	W	--tgba	ok	32	1024	0	0.31
 R6	U	-B	extract_timeout				
 R6	U	-b	extract_timeout				
 R6	U	--tgba	extract_timeout				
-R6	W	-B	ok	64	4096	1	6.52
+R6	W	-B	ok	64	4096	1	6.42
 R6	W	-b	ok	64	4096	1	3.52
-R6	W	--tgba	ok	64	4096	0	3.82
+R6	W	--tgba	ok	64	4096	0	3.42
 R7	U	-B	extract_timeout				
 R7	U	-b	extract_timeout				
 R7	U	--tgba	extract_timeout				
@@ -166,7 +166,7 @@ N5	U	-b	ok	7	27	1	0.21
 N5	U	--tgba	ok	7	27	1	0.21
 N5	W	-B	ok	7	27	1	0.31
 N5	W	-b	ok	7	27	1	0.21
-N5	W	--tgba	ok	7	27	0	0.21
+N5	W	--tgba	ok	7	27	0	0.31
 N6	U	-B	ok	8	35	1	0.91
 N6	U	-b	ok	8	35	1	0.91
 N6	U	--tgba	ok	8	35	1	0.91
@@ -174,11 +174,11 @@ N6	W	-B	ok	8	35	1	1.21
 N6	W	-b	ok	8	35	1	1.01
 N6	W	--tgba	ok	8	35	0	1.01
 N7	U	-B	ok	9	44	1	6.62
-N7	U	-b	ok	9	44	1	6.52
-N7	U	--tgba	ok	9	44	1	6.62
-N7	W	-B	ok	9	44	1	7.82
-N7	W	-b	ok	9	44	1	6.42
-N7	W	--tgba	ok	9	44	0	6.42
+N7	U	-b	ok	9	44	1	6.32
+N7	U	--tgba	ok	9	44	1	6.52
+N7	W	-B	ok	9	44	1	7.52
+N7	W	-b	ok	9	44	1	6.22
+N7	W	--tgba	ok	9	44	0	6.22
 N8	U	-B	extract_timeout				
 N8	U	-b	extract_timeout				
 N8	U	--tgba	extract_timeout				

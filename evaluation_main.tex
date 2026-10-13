@@ -29,24 +29,24 @@ Core i7-8650U at 1.9 GHz with 11.7 GB memory, OCaml 5.4.0, Rocq 9.0.1, and
 Spot 2.16. The fresh run used five repetitions per completed configuration
 and a 300-second limit per attempt. Its run log, machine record, summary
 table, and generated automata are preserved under
-\path{evaluation/runs/2026-10-10-full-eval-v1/}.
+\path{evaluation/runs/2026-10-12-full-eval-v2/}.
 \input{evaluation/optimizer_table}
 
 Across the 29 completed inputs, the sum of reachable transition counts falls
-from 20,230 at the post-reset-completion boundary to 1,512 after optimization
-(an aggregate reduction of 92.53\%). Nineteen cases have fewer transitions
-and ten are unchanged. This aggregate is strongly skewed: R6 contributes
-14,985 of the 18,718 removed transitions, so the percentage is not a typical
+from 20,204 at the post-reset-completion boundary to 1,510 after optimization
+(an aggregate reduction of 92.53\%). Sixteen cases have fewer transitions
+and 13 are unchanged. This aggregate is strongly skewed: R6 contributes
+14,985 of the 18,694 removed transitions, so the percentage is not a typical
 per-instance reduction. Active clocks used in guards or resets sum from 77
-to 75; only two cases reduce this count. The export stage has a different
-effect: explicit transitions sum from 1,512 to 3,221, an increase of
-113.03\%; six exports grow and 23 have the same count as their optimized
+to 74; only three cases (F2, F11, F13) reduce this count. The export stage has a different
+effect: explicit transitions sum from 1,510 to 3,219, an increase of
+113.18\%; six exports grow and 23 have the same count as their optimized
 input. Export-size change is reported separately from optimization and is
 not counted as an optimization regression.
 \input{evaluation/optimizer_aggregate_table}
 The family breakdown shows how concentrated these totals are. The six
-completed bounded-response R cases account for 18,441 of the 18,718 removed
-transitions (98.52\%); the F and N groups remove 60 and 217, respectively.
+completed bounded-response R cases account for 18,441 of the 18,694 removed
+transitions (98.65\%); the F and N groups remove 36 and 217, respectively.
 The R group's explicit export grows from 1,089 to 2,796 transitions, while
 the F group grows by two and the N group is unchanged. Thus the aggregate
 optimizer reduction is driven mainly by one bounded-response family, and the
@@ -55,11 +55,11 @@ family.
 
 Part of this reduction only re-merges the cubes that Spot emits one by one.
 With symbolic grouping applied in both runs, the optimizer alone lowers the
-symbolic transition count (\texttt{-n 0} against the default) from 729 to 356
-(51\%) on the 27 configurations whose unoptimized export completes: from 389
-to 228 on F and N, and from 340 to 128 on R1--R4. It is smaller in 17 and
-equal in 10 (supplement). The unoptimized export of R5 and R6 does not finish
-within 300 s, whereas the optimized pipeline completes them in 2.6 s and 40.6 s.
+symbolic transition count (\texttt{-n 0} against the default) from 704 to 354
+(50\%) on the 27 configurations whose unoptimized export completes: from 364
+to 226 on F and N, and from 340 to 128 on R1--R4. It is smaller in 14 and
+equal in 13 (supplement). The unoptimized export of R5 and R6 does not finish
+within 300 s, whereas the optimized pipeline completes them in 2.3 s and 33.7 s.
 
 \begin{figure*}[t]
 \centering
@@ -84,25 +84,26 @@ the output with 448 transitions. The larger explicit edge count results from
 splitting disjunctive guards and adding entry conditions for invariant copies.
 It measures the cost of the target representation, not a reversal of the
 optimizer's reduction. In the fresh run, median optimizer and export times
-are 19.345 s and 13.410 s, respectively. The October 7 archived run reported
-25.091 s and 14.572 s with the same structural counts and round count; both
-five-run records are retained, and no specific cause for the timing change
-is assigned. The generated-group table separately reports the
+are 19.812 s and 12.481 s, respectively. The October 10 and October 7 runs reported
+19.345 and 13.410 s, and 25.091 and 14.572 s, with the same structural
+counts; no cause for the timing changes is assigned. The generated-group table separately reports the
 stage after reset completion so that upstream processing is not folded into
 these optimizer measurements.
 
 The same distinction matters for the other generated inputs. For example,
-F11 starts from its actual five-location, eleven-transition, two-clock TBA
-after reset completion; two rounds yield four reachable locations, seven
-transitions, and one clock. N8 spends most of its end-to-end time in Spot,
-whereas its recorded optimizer and exporter stages take 0.32 s and 0.83 s.
+F11 starts from its actual four-location, seven-transition, two-clock TBA
+after reset completion; two rounds leave the four locations and seven
+transitions and remove one clock. N8 spends most of its end-to-end time in Spot,
+whereas its recorded optimizer and exporter stages take 0.26 s and 0.68 s.
 These cases show that the optimizer's cost depends on its input relation and
 that the upstream producer can dominate total tool time. They do not support
 a general runtime or size bound. With the tool's \texttt{-spot-level low}
-option (default unchanged), N8 takes 9.2 s instead of 107.5 s, and the total
-over the 29 completed configurations falls from 162 s to 54 s; optimized sizes
-are identical except for F5 and F6 (25 to 27 symbolic transitions), and R6,
-dominated by the optimizer and the export, is unaffected.
+option (default unchanged), N8 takes 8.9 s instead of 101.6 s, and the total
+over the 29 completed configurations falls from 163 s to 46 s (one run
+against the five-run medians); optimized sizes are identical except for F5
+and F6 (25 to 27 symbolic transitions). R6 is dominated by the optimizer and
+the export, and its faster run (32.1 s against 46.8 s) is not attributed to
+the level.
 
 \subsection{External output-size reference}
 CASAAL~\cite{casaal_tool} implements the MTL$_{0,\infty}$ construction of
@@ -149,19 +150,19 @@ a stable speed ranking.}
 \toprule
 ID & Optimized $E$ & Max-delay $E$ & All-copy $E$ & Max-delay diagonal atoms & All-copy diagonal atoms & Max-delay time (s) & All-copy time (s)\\
 \midrule
-R2 & 16 & 19 & 16 & 2 & 0 & 0.004 & 0.010\\
-R3 & 44 & 67 & 44 & 30 & 0 & 0.020 & 0.028\\
-R4 & 112 & 217 & 112 & 192 & 0 & 0.296 & 0.210\\
-R5 & 272 & 651 & 272 & 880 & 0 & 1.745 & 1.379\\
-R6 & 640 & 1,837 & 640 & 3,360 & 0 & 14.135 & 14.074\\
+R2 & 16 & 19 & 16 & 2 & 0 & 0.002 & 0.005\\
+R3 & 44 & 67 & 44 & 30 & 0 & 0.014 & 0.024\\
+R4 & 112 & 217 & 112 & 192 & 0 & 0.195 & 0.190\\
+R5 & 272 & 651 & 272 & 880 & 0 & 1.319 & 1.052\\
+R6 & 640 & 1,837 & 640 & 3,360 & 0 & 9.689 & 9.614\\
 \bottomrule
 \end{tabular}
 \end{table*}
 
 Both policies retain the same reachable location counts, active clock counts,
 and invariant-bearing locations on these runs. Peak RSS was measured for
-each full tool process, including Spot and optimization: 17.3/17.3 MB for R2
-and 108.5/107.2 MB for R6 (maximal-delay/all-copy). These process-level
+each full tool process, including Spot and optimization: 17.2/17.3 MB for R2
+and 108.5/107.0 MB for R6 (maximal-delay/all-copy). These process-level
 measurements do not isolate export memory. The observed exporter times also
 have no consistent ordering: all-copy takes longer for R2/R3 and shorter for
 R4/R5, with similar times for R6. The R6 policy comparison uses the same
@@ -333,8 +334,8 @@ process, and TChecker settings were used on both sides.
 \toprule
 System & \texttt{CYCLE} before/after & Stored/visited states before/after & Visited transitions & Runtime before/after (ms) & Peak RSS before/after (KiB)\\
 \midrule
-Responds within 4 units & false / false & 77/77 / 77/77 & 127/127 & 0.551 / 0.597 & 8,220 / 8,240\\
-May remain busy forever & true / true & 15/7 / 15/7 & 19/19 & 0.182 / 0.181 & 7,988 / 8,024\\
+Responds within 4 units & false / false & 77/77 / 77/77 & 127/127 & 0.542 / 0.844 & 8,136 / 8,144\\
+May remain busy forever & true / true & 15/7 / 15/7 & 19/19 & 0.138 / 0.105 & 8,120 / 8,016\\
 \bottomrule
 \end{tabular}
 \end{table*}

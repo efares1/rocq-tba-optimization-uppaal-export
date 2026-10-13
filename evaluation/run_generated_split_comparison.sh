@@ -2,7 +2,7 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 HERE="$ROOT/evaluation"
-RUN="$HERE/runs/2026-10-10-generated-split"
+RUN=${RUN:-"$HERE/runs/2026-10-13-generated-split"}
 EXE="$ROOT/tool/_build/default/src/mtl2tba.exe"
 LIMIT=${LIMIT:-300}
 mkdir -p "$RUN"

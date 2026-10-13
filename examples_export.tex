@@ -4,16 +4,14 @@ $\Diamond_{\le5}p\land\Box_{<2}\neg p$ is F11 in the benchmark. Paper~1
 uses it to illustrate translation; here we do not repeat that construction.
 We begin with the actual TBA emitted by the integrated tool after its
 upstream relaxation and reset-completion stages. The checked-in DOT record
-\texttt{evaluation/out/F11\_opt\_input.dot} has five locations, eleven
+\texttt{evaluation/out/F11\_opt\_input.dot} has four locations, seven
 transitions, and two clocks, and is the input to the optimizer measured in
 \texttt{evaluation/results.tsv}.
 
-In the first optimization round, contradictory action cubes remove the
-transitions that made location~2 reachable. The pass named
-\texttt{remove\_unreachable} then removes outgoing transitions from that
-location, which now has no incoming edge. Dead-reset elimination and
-synchronous-clock merging simplify the remaining timing structure. In the
-second round, normalization exposes a reset of the merged-away clock as dead,
+In the first optimization round, synchronous-clock merging replaces the second
+clock by the first in the lower-bound guard, and dead-reset elimination removes
+the resets of the first clock that no later guard reads. In the
+second round, normalization exposes the reset of the merged-away clock as dead,
 and the optimizer removes it. The final TBA has four reachable locations,
 seven transitions, and one clock. Export retains seven explicit transitions
 and adds two conjunctive location invariants. It also emits a separate
@@ -29,9 +27,9 @@ belong to the earlier translation article~\cite{fares_bodeveix_mtl_translation}.
 \centering
 \resizebox{\textwidth}{!}{\input{figures/fig_step6}}
 \caption{F11 after one optimization round and after UPPAAL-oriented export.
-The first panel shows the removal of a location with no incoming edges and
-the synchronous-clock simplification; the second shows the exported
-conjunctive invariants. The full five-location, eleven-transition optimizer
-input is the generated artifact cited in the text.}
+The first panel shows the synchronous-clock simplification and the removal of
+dead resets; the second shows the exported conjunctive invariants and the
+single remaining clock. The generated four-location, seven-transition,
+two-clock optimizer input is the artifact cited in the text.}
 \label{fig:running-pipeline}
 \end{figure*}

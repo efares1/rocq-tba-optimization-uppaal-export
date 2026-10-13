@@ -12,56 +12,56 @@
       <name>A2</name>
       <label kind="invariant">x0 &lt;= 5</label>
     </location>
-    <location id="id6" x="400" y="0">
-      <name>L6</name>
+    <location id="id4" x="400" y="0">
+      <name>L4</name>
       <label kind="invariant">x0 &lt;= 5</label>
     </location>
-    <location id="id8" x="600" y="0">
-      <name>L8</name>
+    <location id="id6" x="600" y="0">
+      <name>L6</name>
       <label kind="invariant">x0 &lt;= 5</label>
     </location>
     <init ref="id0"/>
     <transition>
-      <source ref="id8"/>
-      <target ref="id8"/>
+      <source ref="id6"/>
+      <target ref="id6"/>
       <label kind="guard">x0 &lt;= 5</label>
       <label kind="synchronisation">other?</label>
     </transition>
     <transition>
-      <source ref="id8"/>
-      <target ref="id6"/>
+      <source ref="id6"/>
+      <target ref="id4"/>
       <label kind="guard">x0 &lt;= 5</label>
       <label kind="synchronisation">p?</label>
       <label kind="assignment">x1 = 0</label>
     </transition>
     <transition>
-      <source ref="id8"/>
+      <source ref="id6"/>
       <target ref="id0"/>
       <label kind="guard">x0 &lt;= 5</label>
       <label kind="synchronisation">q?</label>
       <label kind="assignment">x0 = 0</label>
     </transition>
     <transition>
-      <source ref="id6"/>
-      <target ref="id8"/>
+      <source ref="id4"/>
+      <target ref="id6"/>
       <label kind="guard">x1 &gt;= 2 &amp;&amp; x0 &lt;= 5</label>
       <label kind="synchronisation">other?</label>
     </transition>
     <transition>
-      <source ref="id6"/>
-      <target ref="id6"/>
-      <label kind="guard">x0 &lt;= 5</label>
-      <label kind="synchronisation">other?</label>
-    </transition>
-    <transition>
-      <source ref="id6"/>
-      <target ref="id6"/>
+      <source ref="id4"/>
+      <target ref="id4"/>
       <label kind="guard">x0 &lt;= 5</label>
       <label kind="synchronisation">p?</label>
       <label kind="assignment">x1 = 0</label>
     </transition>
     <transition>
-      <source ref="id6"/>
+      <source ref="id4"/>
+      <target ref="id4"/>
+      <label kind="guard">x0 &lt;= 5</label>
+      <label kind="synchronisation">other?</label>
+    </transition>
+    <transition>
+      <source ref="id4"/>
       <target ref="id0"/>
       <label kind="guard">x0 &lt;= 5 &amp;&amp; x1 &gt;= 2</label>
       <label kind="synchronisation">q?</label>
@@ -69,22 +69,22 @@
     </transition>
     <transition>
       <source ref="id2"/>
-      <target ref="id8"/>
+      <target ref="id6"/>
       <label kind="guard">x1 &gt;= 2 &amp;&amp; x0 &lt;= 5</label>
       <label kind="synchronisation">other?</label>
     </transition>
     <transition>
       <source ref="id2"/>
-      <target ref="id6"/>
-      <label kind="guard">x0 &lt;= 5</label>
-      <label kind="synchronisation">other?</label>
-    </transition>
-    <transition>
-      <source ref="id2"/>
-      <target ref="id6"/>
+      <target ref="id4"/>
       <label kind="guard">x0 &lt;= 5</label>
       <label kind="synchronisation">p?</label>
       <label kind="assignment">x1 = 0</label>
+    </transition>
+    <transition>
+      <source ref="id2"/>
+      <target ref="id4"/>
+      <label kind="guard">x0 &lt;= 5</label>
+      <label kind="synchronisation">other?</label>
     </transition>
     <transition>
       <source ref="id2"/>

@@ -193,9 +193,11 @@ the initial location; the tool counts and prints only the locations
 reachable from the initial one and their transitions.  Third, a transition whose
 action label is unsatisfiable, because it requires two different actions or an
 action and its negation, is removed (Rocq:
-\texttt{remove\_\allowbreak{}unsat\_\allowbreak{}accepts}).  Such labels arise because the
-translator treats an action $a$ and the atom $\neg a$ of $\T(f)$ as independent
-propositions; removing them also enables clock merging, since the resets of a
+\texttt{remove\_\allowbreak{}unsat\_\allowbreak{}accepts}).  Such labels arise when the
+translator receives an action $a$ and the atom $\neg a$ of $\T(f)$ as independent
+propositions (the tool option \texttt{-indep-neg} of the translation article;
+its default negates the atom for $a$, which avoids most of them) or when a cube
+requires two different actions; removing them also enables clock merging, since the resets of a
 transition that can never be taken would otherwise prevent it.
 
 \subsection{Dead resets and merging of synchronously reset clocks}

@@ -487,8 +487,10 @@ The repository theorem
 \path{MTL_to_exported_correct_with}
 performs this composition. This paper adds no proof of the MTL translation.
 \end{proof}
-The first hypothesis is exactly the all-words backend contract of
-\path{MTL_to_TBA_correct_with}; \texttt{well\_formed} requires
+The first hypothesis is exactly the backend contract of
+\path{MTL_to_TBA_correct_with}, required on the action-consistent
+propositional words (those in which the negated action atom is the complement
+of the action atom); \texttt{well\_formed} requires
 nonnegative non-strict upper bounds and strictly positive bounds for the
 other primitive timed operators. No convergence premise is imposed on
 $n$: \path{optimize_accepts} proves preservation by induction for every
@@ -510,7 +512,7 @@ succeeds on an automaton whose acceptance relies on nonzero initial clock values
 
 The separately verified all-copy policy yields the parallel theorem
 \path{MTL_to_exported_all_correct_with}. For the same $n$, $f$,
-$A$, and $w$, under the same all-words backend contract and
+$A$, and $w$, under the same backend contract and
 $\mathsf{well\_formed}(f)$ hypothesis, it proves
 \[
 \begin{aligned}

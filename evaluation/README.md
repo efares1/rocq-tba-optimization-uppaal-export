@@ -1,5 +1,23 @@
 # Evaluation
 
+## Re-run of 2026-10-12
+
+`bash run_all.sh` repeats the tool-dependent steps (full and `-noweak` runs,
+boundary tests, Spot validation, interface check, acceptance encodings, random
+formulas, export policies, TChecker comparisons, random differences, symbolic
+before/after) with the tool of `../tool`, after the change of the printing of
+the negated event atom (`!"p"`, option `-explicit-neg`, default; `-indep-neg`
+is the previous printing) and of the acceptance convention for unmarked CASAAL
+automata in `tck_product.py`.  The log is `run_all.log`; the tables are
+regenerated with `make_tables.py`, `make_optimizer_table.py`,
+`make_optimizer_aggregate_table.py`, `make_symbolic_before_after.py` and
+`make_export_policies_table.py`.  Not repeated: the synthetic TBA suite and
+the CASAAL runs themselves (their outputs in `casaal_out*` are reused).
+`ours_results_low.tsv`, `ours_runs_low.tsv`, `spot_det_low.tsv` and
+`machine_low.txt` are one repetition with `-spot-level low`
+(`REPS=1 OPTS="-spot-level low" SUFFIX=_low bash run_full_eval.sh`).
+The run is archived in `runs/2026-10-12-full-eval-v2/`.
+
 ## Files
 
 - `formulas.tsv`: the benchmark formulas (F1–F14, F3b, and the families
@@ -108,12 +126,17 @@
     propositions p, q, r, bounds up to 3, unbounded operators included) and
     their CASAAL automata (`random_formulas.tsv`, `casaal_out_rand/`);
     `run_random_diff.sh`: P1, P2, S with a limit of 120 s
-    (`random_diff.tsv`).  Result: all empty on 95 formulas; on 4 formulas,
-    some checks do not conclude and the others report emptiness; on X74,
-    P1 is not empty: CASAAL prints no acceptance mark for the eventuality
-    <>(q & r), which no transition fulfills on the common domain, so that its
-    printed automaton for the unsatisfiable negation accepts every word
-    starting with p (the same happens for `F(q) & G(!q)`).
+    (`random_diff.tsv`).  Result (2026-10-12): all empty on 96 formulas; on 4
+    formulas (X31, X62, X64, X83), some checks do not conclude within the
+    limit and the others report emptiness; none is non-empty.  X74 was
+    non-empty for P1 with the first version of `tck_product.py`: CASAAL
+    prints no acceptance mark for the eventuality <>(q & r), which no
+    transition fulfills on the common domain, and the script read an
+    automaton without marks as accepting every run.  The script now treats a
+    state whose label has an unbounded F or U as non-accepting (the language
+    is empty if no state is accepting) when no mark is printed; the regression
+    test is `test_tck_product_acceptance.py`.  The reading is an
+    interpretation of CASAAL's output.
   - `case_study/liveness_case.sh`: liveness use of the exported automaton:
     the automaton of the negation of [](p -> <> q) composed with a system that
     answers within 4 time units (empty product) and with one that may stay

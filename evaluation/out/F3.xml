@@ -15,14 +15,14 @@
     <transition>
       <source ref="id2"/>
       <target ref="id2"/>
-      <label kind="synchronisation">other?</label>
+      <label kind="guard">x0 &gt; 2</label>
+      <label kind="synchronisation">e?</label>
+      <label kind="assignment">x0 = 0</label>
     </transition>
     <transition>
       <source ref="id2"/>
       <target ref="id2"/>
-      <label kind="guard">x0 &gt; 2</label>
-      <label kind="synchronisation">e?</label>
-      <label kind="assignment">x0 = 0</label>
+      <label kind="synchronisation">other?</label>
     </transition>
     <transition>
       <source ref="id2"/>

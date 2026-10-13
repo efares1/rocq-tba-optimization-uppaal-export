@@ -1,33 +1,44 @@
-# this article — evaluation report (2026-10-11)
+# this article — evaluation report (re-run 2026-10-12/13)
+
+The tool-dependent evaluation was re-run on 2026-10-12/13 after two changes of
+the translation article's tool and proof: the negated event atom is printed
+as `!"p"` (option `-explicit-neg`, default) and the backend contract is
+required on action-consistent words only (see section 11). Sections 1, 2, 4,
+6, 9 and 10 below give the numbers of that run; the archived run of
+2026-10-10 is in `evaluation/runs/2026-10-10-full-eval-v1/`.
 
 Labels: **fresh** = run during this revision; **archived** = recorded earlier in
 `evaluation/runs/`, re-read and recomputed but not re-run; **source** = read
 from source files; **kernel** = Rocq theorem checked by `coqc`/`coqchk`.
 
-## 1. Generated F/R/N group (archived, recomputed)
+## 1. Generated F/R/N group (fresh, 2026-10-12)
 
-Source: `evaluation/runs/2026-10-10-full-eval-v1/ours_results.tsv`
-(five-run medians, Ubuntu 26.04/WSL 2, i7-8650U, OCaml 5.4.0, Spot 2.16,
+Source: `evaluation/ours_results.tsv`, copied to
+`evaluation/runs/2026-10-12-full-eval-v2/` (five-run medians, Ubuntu 26.04/WSL 2, i7-8650U, OCaml 5.4.0, Spot 2.16,
 300 s limit, tool default front end = recur + weak until).
 
 | Quantity | Recomputed | In the article |
 |---|---|---|
 | attempted / completed | 31 / 29 (R7, R8 time out) | same |
-| transitions after reset completion (optimizer input) | 20,230 | 20,230 |
-| after optimization | 1,512 (−92.53 %) | 1,512 |
-| after explicit export | 3,221 (+113.03 %) | 3,221 |
-| symbolic transitions after export | 996 | not stated in aggregate |
-| fewer transitions after optimization / unchanged | 19 / 10 | same |
+| transitions after reset completion (optimizer input) | 20,204 | 20,204 |
+| after optimization | 1,510 (−92.53 %) | 1,510 |
+| after explicit export | 3,219 (+113.18 %) | 3,219 |
+| symbolic transitions after export | 994 | not stated in aggregate |
+| fewer transitions after optimization / unchanged | 16 / 13 | same |
 | exports that grow | 6 | same |
-| active clocks | 77 → 75 | same |
-| removed by R family / R6 | 18,441 / 14,985 of 18,718 | same |
-| F / N removed | 60 / 217 | same |
+| active clocks | 77 → 74 (F2, F11, F13) | same |
+| removed by R family / R6 | 18,441 / 14,985 of 18,694 | same |
+| F / N removed | 36 / 217 | same |
 
 R6: 64 locations, 15,625 transitions, 6 clocks → 6 rounds → 640 transitions
 → export 1,837 explicit transitions, 63 invariant locations, 3,360 diagonal
-atoms, 448 symbolic transitions (archived). All numbers in the article match.
+atoms, 448 symbolic transitions. All numbers in the article match.
 
-## 2. CASAAL as an external output-size reference (archived data, recomputed)
+Changed by the explicit negation (Spot automaton, states/transitions): F11 5/11 ->
+4/7, F12 4/17 -> 3/9, F13 5/17 -> 3/6, F14 6/26 -> 6/23; R and N unchanged.
+Timings: R6 optimizer 19.8 s, export 12.5 s; N8 Spot 99.8 s.
+
+## 2. CASAAL as an external output-size reference (fresh sizes, CASAAL data archived)
 
 Source: `evaluation/casaal_exclusive.tsv` (CASAAL with mutually exclusive
 events) against our optimized output. Over the 27 configurations completed
@@ -73,7 +84,9 @@ round. The optimizer was not modified.
 ## 4. Regression tests (fresh)
 
 `evaluation/run_boundary_tests.sh` + `check_boundaries.py`: 18/18 finite-word
-boundary checks pass with the tool rebuilt from `tool/` on 2026-10-11.
+boundary checks pass with the tool rebuilt from `tool/` on 2026-10-12.
+`evaluation/test_tck_product_acceptance.py`: regression test of the converter
+for CASAAL automata without acceptance marks (X74).
 
 ## 5. UPPAAL (re-run 2026-10-11)
 
@@ -87,10 +100,12 @@ the archived ones in `evaluation/case_study/expected.txt` and
 `evaluation/case_study/uppaal_results_rerun_2026-10-11.txt`.
 These runs give verdicts only (no before/after runtime or zone counts).
 
-## 6. TChecker before/after (archived)
+## 6. TChecker before/after (fresh, 2026-10-13)
 
-`evaluation/runs/2026-10-10-tchecker-before-after-v3/`: not re-run in this
-revision; byte-identical products before/after, same verdicts and explored states.
+`evaluation/runs/2026-10-13-tchecker-before-after/` (`run_tck_before_after.sh`):
+byte-identical exported XML and products before/after, same verdicts and
+explored states as in the run of 2026-10-10 (resp_ok: CYCLE false, 77/77/127;
+resp_bad: CYCLE true, 15/7/19); checker times and RSS differ.
 
 ## 7. Figures S3/S4 of an earlier draft of the supplement — not restored
 
@@ -126,26 +141,53 @@ The default front end (recur + weak until) is now named with its theorem
 - `evaluation/run_symbolic_before_after.sh` + `make_symbolic_before_after.py`:
   symbolic transitions of the exported automaton with the optimizer disabled
   (`-n 0`) and enabled, both with symbolic grouping. On the 27 configurations
-  where the unoptimized export completes: 729 → 356 (51 %); F+N 389 → 228;
-  R1–R4 340 → 128; smaller in 17, equal in 10, larger in 0. R5, R6: the
-  unoptimized export does not finish in 300 s (optimized: 2.6 s, 40.6 s).
+  where the unoptimized export completes: 704 → 354 (50 %); F+N 364 → 226;
+  R1–R4 340 → 128; smaller in 14, equal in 13, larger in 0. R5, R6: the
+  unoptimized export does not finish in 300 s (optimized: 2.3 s, 33.7 s).
   Symbolic output equals CASAAL's on 24/27 (F5, F6 larger: 25 vs 15; F14
   smaller).
 - Earlier attempt to attribute reductions by comparing `compile(f)` with the
   column `sym_trans` was discarded: `sym_trans` is counted after the final
   symbolic grouping, so the comparison mixes representations.
-- `-spot-level low` (default unchanged): total time over the 29 completing
-  configurations 162 s → 54 s; N8 107.5 s → 9.2 s; sizes identical except F5,
-  F6 (symbolic 25 → 27). R6 unaffected (optimizer/export-bound).
+- `-spot-level low` (default unchanged), one repetition on 2026-10-13
+  (`ours_results_low.tsv`): total time over the 29 completing configurations
+  163 s (five-run medians) → 46 s; N8 101.6 s → 8.9 s; sizes identical except
+  F5, F6 (symbolic 25 → 27). R6 46.8 s → 32.1 s, with optimizer and export also
+  faster in that run, so the difference is not attributed to the level.
 
 ## 10. Consistency of the grouped counts in the two articles
 
 `evaluation/run_chain.sh` runs the tool with the front end of the translation
 article (`-noweak -norecur`) and the optimizer disabled (`-n 0`), and writes
 `evaluation/chain_noweak.tsv` (explicit transitions of compile(f) and symbolic
-transitions). On the 23 configurations that complete within 300 s (F1--F14,
+transitions). Re-run on 2026-10-13 with the tool after the explicit-negation change:
+on the 27 configurations that complete within 300 s (F1--F14, F3b,
 R1--R4, N1--N8), both columns equal the "explicit" and "grouped" columns of the
 translation article's `grouped_edges.tsv`. R5 does not finish within 300 s
 under this setting; R6--R8 do not build. The symbolic counts of Section 5 use the default
 front end (weak-until and recurrence rewritings enabled) and are therefore not
 comparable with the grouped column of the translation article for the F and R families.
+
+## 11. Re-run of 2026-10-12/13: changes and verification
+
+- `bash evaluation/run_all.sh` (12 steps: full, noweak, boundary, spot,
+  interface, accept, randopt, policies, tckeq, tckcomp, randdiff, symbolic),
+  2026-10-12 16:35 to 2026-10-13 02:05 (+04); log `evaluation/run_all.log`,
+  copy in `evaluation/runs/2026-10-12-full-eval-v2/`. Extra runs:
+  `run_tck_before_after.sh` (2026-10-13), `run_generated_split_comparison.sh`
+  (2026-10-13, `runs/2026-10-13-generated-split/`), `run_chain.sh`,
+  and one repetition with `-spot-level low`.
+- Interface check: 31/31 "same / equivalent". Spot validation: 25 yes, 6 ltl2ba
+  timeouts (R6–R8, N6–N8), as before. TChecker equivalence: 17 configurations
+  conclude on the exported automata, 3 (F14, R2, R3) only before optimization,
+  9 without conclusion (R4–R6, N5, N6; R7, R8, N7, N8 tool timeouts); no
+  disagreement. All unchanged.
+- Random formulas (`random_diff.tsv`): all empty on 96, four with partial
+  timeouts (X31, X62, X64, X83), none non-empty; X74 is now empty (acceptance
+  convention for unmarked CASAAL automata, `tck_product.py`).
+  `random_opt.tsv`: input/optimized/exported transitions 2,507 / 1,526 / 1,564;
+  `init_free` fails on X35, X38, X65, X84, X100 (previously four).
+- Article text updated: optimizer aggregates, family breakdown, symbolic
+  counts, R6 timings, F11 running example (input now 4/7/2, figure renumbered),
+  export-policy table and RSS, spot-level paragraph, TChecker before/after
+  table, validation section (random formulas, X74), supplement statistics.
