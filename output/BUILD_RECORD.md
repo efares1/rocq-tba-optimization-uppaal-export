@@ -18,12 +18,13 @@ repository file), the audit `Audit_Revision_20261010.v` (17 `Print Assumptions` 
 including the two `_recur_weak_with` theorems) and `coqchk` on the ten modules all exit 0.
 SHA-256 of every `proof/*.v` file is in `output/rocq/build_info.txt`.
 
-## Evaluation re-run of 2026-10-12/13
-After the explicit printing of negated event atoms (`-explicit-neg`) and the weakened
-backend contract, the full evaluation was repeated; the archived runs are
-`evaluation/runs/2026-10-12-full-eval-v2/`, `evaluation/runs/2026-10-13-generated-split/`
-and `evaluation/runs/2026-10-13-tchecker-before-after/`. Report: `PAPER2_EVALUATION_REPORT.md`,
-section 11.
+## Evaluation run of 2026-10-13/14
+The full evaluation (`evaluation/run_all.sh`, 12 steps, 2026-10-13 19:35 to 2026-10-14 04:59,
++04) was run with the optimizer of this revision; it is archived in
+`evaluation/runs/2026-10-14-full-eval-v3/`. The matched generated-group comparisons are
+archived in `evaluation/runs/2026-10-13-generated-split/` and
+`evaluation/runs/2026-10-13-tchecker-before-after/`. Report: `PAPER2_EVALUATION_REPORT.md`,
+section 12.
 
 ## Merging of locations under the entry invariant, 2026-10-13
 `merge_states_all` (`MTL_to_TBA_Optimizations.v`) compares the guards of two locations by
@@ -33,14 +34,14 @@ modules exit 0; the audit output and the `coqchk` context summary are identical 
 ones (four standard axioms for `merge_states_all_accepts`); `tool/src/optim.ml` was regenerated
 by the extraction and pruning of the Makefile. `evaluation/test_entry_invariant_merging.sh`
 checks the optimized sizes of F1, F11, F12, F13 and the TChecker checks P1, P2, S.
-The tables and aggregate figures of the article are those of the run of 2026-10-12/13 until the
-full evaluation is repeated with this optimizer.
+The tables and aggregate figures of the article are those of the run of 2026-10-13/14, made
+with this optimizer.
 
 ## PDFs (as in the commit)
 | File | Pages | SHA-256 |
 |---|---|---|
-| `paper2.pdf` (= `output/pdf/paper2.pdf`) | 20 | `a448c6ed9dd0e3784b4d9761256fe703fae677f916b0a0781a928f9266e9468d` |
-| `paper2_supp.pdf` (= `output/pdf/paper2_supp.pdf`) | 7 | `1ac2d59dbe6fa524fcd7b1a8c16d766ca7fc217f118e9981712f823faccd0111` |
+| `paper2.pdf` (= `output/pdf/paper2.pdf`) | 20 | `68708e6f45b8dfc882b20768a0d76827e4d2cadba92bf4888dcb13e214544031` |
+| `paper2_supp.pdf` (= `output/pdf/paper2_supp.pdf`) | 7 | `08d5ab1cd19096d50c121d989d8dcbe3e617630fa58cec05548861ca5b19c3d4` |
 
 Rebuild with `build.ps1` (Windows, MiKTeX) or `reproduce.sh` (proofs, tool, evaluation).
 PDF byte hashes depend on build timestamps; the page counts and extracted text are stable.

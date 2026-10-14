@@ -1,4 +1,4 @@
-# this article — evaluation report (re-run 2026-10-12/13)
+# this article — evaluation report (run of 2026-10-13/14)
 
 The tool-dependent evaluation was re-run on 2026-10-12/13 after two changes of
 the translation article's tool and proof: the negated event atom is printed
@@ -11,24 +11,24 @@ Labels: **fresh** = run during this revision; **archived** = recorded earlier in
 `evaluation/runs/`, re-read and recomputed but not re-run; **source** = read
 from source files; **kernel** = Rocq theorem checked by `coqc`/`coqchk`.
 
-## 1. Generated F/R/N group (fresh, 2026-10-12)
+## 1. Generated F/R/N group (fresh, 2026-10-13/14)
 
 Source: `evaluation/ours_results.tsv`, copied to
-`evaluation/runs/2026-10-12-full-eval-v2/` (five-run medians, Ubuntu 26.04/WSL 2, i7-8650U, OCaml 5.4.0, Spot 2.16,
+`evaluation/runs/2026-10-14-full-eval-v3/` (five-run medians, Ubuntu 26.04/WSL 2, i7-8650U, OCaml 5.4.0, Spot 2.16,
 300 s limit, tool default front end = recur + weak until).
 
 | Quantity | Recomputed | In the article |
 |---|---|---|
 | attempted / completed | 31 / 29 (R7, R8 time out) | same |
 | transitions after reset completion (optimizer input) | 20,204 | 20,204 |
-| after optimization | 1,510 (−92.53 %) | 1,510 |
-| after explicit export | 3,219 (+113.18 %) | 3,219 |
-| symbolic transitions after export | 994 | not stated in aggregate |
-| fewer transitions after optimization / unchanged | 16 / 13 | same |
+| after optimization | 1,500 (−92.58 %) | 1,500 |
+| after explicit export | 3,209 (+113.93 %) | 3,209 |
+| symbolic transitions after export | 984 | not stated in aggregate |
+| fewer transitions after optimization / unchanged | 19 / 10 | same |
 | exports that grow | 6 | same |
 | active clocks | 77 → 74 (F2, F11, F13) | same |
-| removed by R family / R6 | 18,441 / 14,985 of 18,694 | same |
-| F / N removed | 36 / 217 | same |
+| removed by R family / R6 | 18,441 / 14,985 of 18,704 | same |
+| F / N removed | 46 / 217 | same |
 
 R6: 64 locations, 15,625 transitions, 6 clocks → 6 rounds → 640 transitions
 → export 1,837 explicit transitions, 63 invariant locations, 3,360 diagonal
@@ -36,7 +36,7 @@ atoms, 448 symbolic transitions. All numbers in the article match.
 
 Changed by the explicit negation (Spot automaton, states/transitions): F11 5/11 ->
 4/7, F12 4/17 -> 3/9, F13 5/17 -> 3/6, F14 6/26 -> 6/23; R and N unchanged.
-Timings: R6 optimizer 19.8 s, export 12.5 s; N8 Spot 99.8 s.
+Timings: R6 optimizer 17.8 s, export 10.7 s; N8 total 98.3 s.
 
 ## 2. CASAAL as an external output-size reference (fresh sizes, CASAAL data archived)
 
@@ -45,9 +45,9 @@ events) against our optimized output. Over the 27 configurations completed
 by both tools with an exact CASAAL encoding (F3, F13 are hatted and have no
 exact CASAAL encoding; R7, R8 time out for us):
 
-- locations and symbolic transitions coincide in **24/27**;
+- locations and symbolic transitions coincide in **22/27**;
 - F5, F6: ours 7 locations / 25 symbolic transitions, CASAAL 4 / 15 (ours larger);
-- F14: ours 6 / 14, CASAAL 8 / 18 (ours smaller);
+- F11: ours 3 / 4, CASAAL 4 / 7; F12: ours 2 / 5, CASAAL 3 / 9; F14: ours 6 / 14, CASAAL 8 / 18 (ours smaller);
 - clocks coincide except F11 (ours 1, CASAAL 2; reduced by the optimizer from 2)
   and F8 (ours 0, CASAAL 1; due to the upstream recur rewriting, not credited
   to the optimizer);
@@ -191,3 +191,30 @@ comparable with the grouped column of the translation article for the F and R fa
   counts, R6 timings, F11 running example (input now 4/7/2, figure renumbered),
   export-policy table and RSS, spot-level paragraph, TChecker before/after
   table, validation section (random formulas, X74), supplement statistics.
+
+## 12. Run of 2026-10-13/14: merging of locations under the entry invariant
+
+- Optimizer: `merge_states_all` compares guards by subsumption under the entry
+  invariant of the merged location (`entry_lb_loop_sound`); proof, audit
+  (same four standard axioms) and `coqchk` on the ten modules exit 0.
+  Regression test `evaluation/test_entry_invariant_merging.sh`: F1 2/5/1,
+  F11 3/4/1, F12 2/5/2, F13 2/3/1; P1, P2, S empty on F11 and F12.
+- `bash evaluation/run_all.sh`, 12 steps, 2026-10-13 19:35 to 2026-10-14 04:59
+  (+04); log `evaluation/run_all.log`, copy in
+  `evaluation/runs/2026-10-14-full-eval-v3/`. One repetition with
+  `-spot-level low` was run afterwards (`ours_results_low.tsv`).
+- Sizes (section 1): F11 4/7/2 -> 3/4/1 (locations/transitions/clocks), F12
+  3/9/2 -> 2/5/2, F13 3/6/2 -> 2/3/1 after optimization; the other
+  configurations of the group have the sizes recorded in `ours_results.tsv`.
+  Random formulas (`random_opt.tsv`): input / optimized / exported transitions
+  2,507 / 1,509 / 1,547; locations 696 / 564 / 566; clocks 160 / 128;
+  57 formulas have fewer transitions, 25 fewer locations, 26 fewer clocks, none more.
+- Interface check: 31/31 "same / equivalent". Spot validation: 25 yes, 6 ltl2ba
+  timeouts (R6–R8, N6–N8). TChecker equivalence: 17 configurations conclude on
+  the exported automata (F1–F12 except F3, R1, N1–N4: P1, P2, S empty), 3 (F14,
+  R2, R3) only before optimization, 9 without conclusion; no disagreement.
+- Random formulas (`random_diff.tsv`): all empty on 96, four with partial
+  timeouts (X31, X62, X64, X83), none non-empty. `init_free` fails on X35, X38,
+  X65, X84, X100.
+- Article text updated: optimizer aggregates, family breakdown, symbolic
+  counts, R6 timings, CASAAL comparison, supplement statistics.

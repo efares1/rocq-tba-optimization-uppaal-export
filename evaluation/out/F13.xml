@@ -16,30 +16,7 @@
       <name>L4</name>
       <label kind="invariant">x0 &lt;= 2</label>
     </location>
-    <location id="id6" x="600" y="0">
-      <name>L6</name>
-      <label kind="invariant">x0 &lt;= 2</label>
-    </location>
     <init ref="id1"/>
-    <transition>
-      <source ref="id6"/>
-      <target ref="id6"/>
-      <label kind="guard">x0 &lt;= 2</label>
-      <label kind="synchronisation">other?</label>
-    </transition>
-    <transition>
-      <source ref="id6"/>
-      <target ref="id2"/>
-      <label kind="guard">x0 &lt;= 2</label>
-      <label kind="synchronisation">e?</label>
-      <label kind="assignment">x0 = 0</label>
-    </transition>
-    <transition>
-      <source ref="id4"/>
-      <target ref="id6"/>
-      <label kind="guard">x0 &gt;= 2 &amp;&amp; x0 &lt;= 2</label>
-      <label kind="synchronisation">other?</label>
-    </transition>
     <transition>
       <source ref="id4"/>
       <target ref="id4"/>
@@ -52,12 +29,6 @@
       <label kind="guard">x0 &gt;= 2 &amp;&amp; x0 &lt;= 2</label>
       <label kind="synchronisation">e?</label>
       <label kind="assignment">x0 = 0</label>
-    </transition>
-    <transition>
-      <source ref="id2"/>
-      <target ref="id6"/>
-      <label kind="guard">x0 &gt;= 2 &amp;&amp; x0 &lt;= 2</label>
-      <label kind="synchronisation">other?</label>
     </transition>
     <transition>
       <source ref="id2"/>

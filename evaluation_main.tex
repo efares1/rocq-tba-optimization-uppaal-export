@@ -29,24 +29,24 @@ Core i7-8650U at 1.9 GHz with 11.7 GB memory, OCaml 5.4.0, Rocq 9.0.1, and
 Spot 2.16. The fresh run used five repetitions per completed configuration
 and a 300-second limit per attempt. Its run log, machine record, summary
 table, and generated automata are preserved under
-\path{evaluation/runs/2026-10-12-full-eval-v2/}.
+\path{evaluation/runs/2026-10-14-full-eval-v3/}.
 \input{evaluation/optimizer_table}
 
 Across the 29 completed inputs, the sum of reachable transition counts falls
-from 20,204 at the post-reset-completion boundary to 1,510 after optimization
-(an aggregate reduction of 92.53\%). Sixteen cases have fewer transitions
-and 13 are unchanged. This aggregate is strongly skewed: R6 contributes
-14,985 of the 18,694 removed transitions, so the percentage is not a typical
+from 20,204 at the post-reset-completion boundary to 1,500 after optimization
+(an aggregate reduction of 92.58\%). Nineteen cases have fewer transitions
+and 10 are unchanged. This aggregate is strongly skewed: R6 contributes
+14,985 of the 18,704 removed transitions, so the percentage is not a typical
 per-instance reduction. Active clocks used in guards or resets sum from 77
 to 74; only three cases (F2, F11, F13) reduce this count. The export stage has a different
-effect: explicit transitions sum from 1,510 to 3,219, an increase of
-113.18\%; six exports grow and 23 have the same count as their optimized
+effect: explicit transitions sum from 1,500 to 3,209, an increase of
+113.93\%; six exports grow and 23 have the same count as their optimized
 input. Export-size change is reported separately from optimization and is
 not counted as an optimization regression.
 \input{evaluation/optimizer_aggregate_table}
 The family breakdown shows how concentrated these totals are. The six
-completed bounded-response R cases account for 18,441 of the 18,694 removed
-transitions (98.65\%); the F and N groups remove 36 and 217, respectively.
+completed bounded-response R cases account for 18,441 of the 18,704 removed
+transitions (98.59\%); the F and N groups remove 46 and 217, respectively.
 The R group's explicit export grows from 1,089 to 2,796 transitions, while
 the F group grows by two and the N group is unchanged. Thus the aggregate
 optimizer reduction is driven mainly by one bounded-response family, and the
@@ -55,11 +55,11 @@ family.
 
 Part of this reduction only re-merges the cubes that Spot emits one by one.
 With symbolic grouping applied in both runs, the optimizer alone lowers the
-symbolic transition count (\texttt{-n 0} against the default) from 704 to 354
-(50\%) on the 27 configurations whose unoptimized export completes: from 364
-to 226 on F and N, and from 340 to 128 on R1--R4. It is smaller in 14 and
-equal in 13 (supplement). The unoptimized export of R5 and R6 does not finish
-within 300 s, whereas the optimized pipeline completes them in 2.3 s and 33.7 s.
+symbolic transition count (\texttt{-n 0} against the default) from 704 to 344
+(51\%) on the 27 configurations whose unoptimized export completes: from 364
+to 216 on F and N, and from 340 to 128 on R1--R4. It is smaller in 17 and
+equal in 10 (supplement). The unoptimized export of R5 and R6 does not finish
+within 300 s, whereas the optimized pipeline completes them in 3.6 s and 39.0 s.
 
 \begin{figure*}[t]
 \centering
@@ -84,9 +84,7 @@ the output with 448 transitions. The larger explicit edge count results from
 splitting disjunctive guards and adding entry conditions for invariant copies.
 It measures the cost of the target representation, not a reversal of the
 optimizer's reduction. In the fresh run, median optimizer and export times
-are 19.812 s and 12.481 s, respectively. The October 10 and October 7 runs reported
-19.345 and 13.410 s, and 25.091 and 14.572 s, with the same structural
-counts; no cause for the timing changes is assigned. The generated-group table separately reports the
+are 17.807 s and 10.666 s, respectively. The generated-group table separately reports the
 stage after reset completion so that upstream processing is not folded into
 these optimizer measurements.
 
@@ -98,15 +96,15 @@ same exit on $p$ to the accepting location, except that the exit of the first
 also carries $x\ge2$; the second is entered only when $x\ge2$ holds and $x$ is
 not reset afterwards. They are merged because the guards are compared under
 that entry invariant, which equality of guards cannot do. N8 spends most of its end-to-end time in Spot,
-whereas its recorded optimizer and exporter stages take 0.26 s and 0.68 s.
+whereas its recorded optimizer and exporter stages take 0.33 s and 0.70 s.
 These cases show that the optimizer's cost depends on its input relation and
 that the upstream producer can dominate total tool time. They do not support
 a general runtime or size bound. With the tool's \texttt{-spot-level low}
-option (default unchanged), N8 takes 8.9 s instead of 101.6 s, and the total
-over the 29 completed configurations falls from 163 s to 46 s (one run
+option (default unchanged), N8 takes 11.6 s instead of 98.3 s, and the total
+over the 29 completed configurations falls from 152 s to 58 s (one run
 against the five-run medians); optimized sizes are identical except for F5
 and F6 (25 to 27 symbolic transitions). R6 is dominated by the optimizer and
-the export, and its faster run (32.1 s against 46.8 s) is not attributed to
+the export, and its faster run (37.9 s against 39.0 s) is not attributed to
 the level.
 
 \subsection{External output-size reference}
@@ -118,9 +116,10 @@ baseline for the optimization passes. We ran it with mutually exclusive
 events, which matches the one-event-per-position words of our semantics, and
 compare reachable locations and symbolic transitions of our optimized output
 with CASAAL's output on the 27 configurations that both tools completed and
-that CASAAL encodes exactly. The counts coincide in 24 cases. For F5 and F6
+that CASAAL encodes exactly. The counts coincide in 22 cases. For F5 and F6
 our output is larger (7 locations and 25 symbolic transitions against 4 and
-15); for F14 it is smaller (6 and 14 against 8 and 18). Clock counts coincide
+15); for F11 (3 and 4 against 4 and 7), F12 (2 and 5 against 3 and 9), and
+F14 (6 and 14 against 8 and 18) it is smaller. Clock counts coincide
 except for F11, where two optimization rounds reduce the two clocks of the
 post-reset-completion input to one while CASAAL uses two, and F8, where the
 difference comes from the upstream rewriting of $\Box\Diamond_{\ge2}p$ into

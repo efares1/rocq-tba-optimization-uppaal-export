@@ -1,6 +1,6 @@
 # Evaluation
 
-## Re-run of 2026-10-12
+## Run of 2026-10-13/14
 
 `bash run_all.sh` repeats the tool-dependent steps (full and `-noweak` runs,
 boundary tests, Spot validation, interface check, acceptance encodings, random
@@ -16,7 +16,7 @@ the CASAAL runs themselves (their outputs in `casaal_out*` are reused).
 `ours_results_low.tsv`, `ours_runs_low.tsv`, `spot_det_low.tsv` and
 `machine_low.txt` are one repetition with `-spot-level low`
 (`REPS=1 OPTS="-spot-level low" SUFFIX=_low bash run_full_eval.sh`).
-The run is archived in `runs/2026-10-12-full-eval-v2/`.
+The run is archived in `runs/2026-10-14-full-eval-v3/`.
 
 ## Files
 
@@ -126,7 +126,7 @@ The run is archived in `runs/2026-10-12-full-eval-v2/`.
     propositions p, q, r, bounds up to 3, unbounded operators included) and
     their CASAAL automata (`random_formulas.tsv`, `casaal_out_rand/`);
     `run_random_diff.sh`: P1, P2, S with a limit of 120 s
-    (`random_diff.tsv`).  Result (2026-10-12): all empty on 96 formulas; on 4
+    (`random_diff.tsv`).  Result (2026-10-13/14): all empty on 96 formulas; on 4
     formulas (X31, X62, X64, X83), some checks do not conclude within the
     limit and the others report emptiness; none is non-empty.  X74 was
     non-empty for P1 with the first version of `tck_product.py`: CASAAL

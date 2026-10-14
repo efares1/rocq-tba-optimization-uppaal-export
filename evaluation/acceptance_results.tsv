@@ -122,9 +122,9 @@ R5	W	--tgba	ok	32	1024	0	0.31
 R6	U	-B	extract_timeout				
 R6	U	-b	extract_timeout				
 R6	U	--tgba	extract_timeout				
-R6	W	-B	ok	64	4096	1	6.42
+R6	W	-B	ok	64	4096	1	5.92
 R6	W	-b	ok	64	4096	1	3.52
-R6	W	--tgba	ok	64	4096	0	3.42
+R6	W	--tgba	ok	64	4096	0	3.92
 R7	U	-B	extract_timeout				
 R7	U	-b	extract_timeout				
 R7	U	--tgba	extract_timeout				
@@ -166,19 +166,19 @@ N5	U	-b	ok	7	27	1	0.21
 N5	U	--tgba	ok	7	27	1	0.21
 N5	W	-B	ok	7	27	1	0.31
 N5	W	-b	ok	7	27	1	0.21
-N5	W	--tgba	ok	7	27	0	0.31
+N5	W	--tgba	ok	7	27	0	0.21
 N6	U	-B	ok	8	35	1	0.91
 N6	U	-b	ok	8	35	1	0.91
 N6	U	--tgba	ok	8	35	1	0.91
-N6	W	-B	ok	8	35	1	1.21
-N6	W	-b	ok	8	35	1	1.01
-N6	W	--tgba	ok	8	35	0	1.01
-N7	U	-B	ok	9	44	1	6.62
-N7	U	-b	ok	9	44	1	6.32
-N7	U	--tgba	ok	9	44	1	6.52
-N7	W	-B	ok	9	44	1	7.52
-N7	W	-b	ok	9	44	1	6.22
-N7	W	--tgba	ok	9	44	0	6.22
+N6	W	-B	ok	8	35	1	1.41
+N6	W	-b	ok	8	35	1	1.21
+N6	W	--tgba	ok	8	35	0	1.21
+N7	U	-B	ok	9	44	1	7.32
+N7	U	-b	ok	9	44	1	6.52
+N7	U	--tgba	ok	9	44	1	6.62
+N7	W	-B	ok	9	44	1	8.02
+N7	W	-b	ok	9	44	1	6.72
+N7	W	--tgba	ok	9	44	0	6.32
 N8	U	-B	extract_timeout				
 N8	U	-b	extract_timeout				
 N8	U	--tgba	extract_timeout				
