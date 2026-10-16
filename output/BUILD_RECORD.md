@@ -40,8 +40,8 @@ with this optimizer.
 ## PDFs (as in the commit)
 | File | Pages | SHA-256 |
 |---|---|---|
-| `paper2.pdf` (= `output/pdf/paper2.pdf`) | 20 | `eb3f853a29aff9ee37e2eabda8f0e2c94e297407411377085698580e9ed83bc4` |
-| `paper2_supp.pdf` (= `output/pdf/paper2_supp.pdf`) | 7 | `555ecd2ac4a70220f259b1409b89f668b59f8f3787d6908f58670da73ad70644` |
+| `paper2.pdf` (= `output/pdf/paper2.pdf`) | 20 | `9d77020f40ab5be00782aa7b08de78305d046e28d051356a7a9b751e03811402` |
+| `paper2_supp.pdf` (= `output/pdf/paper2_supp.pdf`) | 7 | `a59da0e0037c4854e14f721ae323058a3d3a38958a9667204ef68ea358be785d` |
 
 Rebuild with `build.ps1` (Windows, MiKTeX) or `reproduce.sh` (proofs, tool, evaluation).
 PDF byte hashes depend on build timestamps; the page counts and extracted text are stable.
