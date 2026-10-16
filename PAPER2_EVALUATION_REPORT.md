@@ -85,8 +85,8 @@ round. The optimizer was not modified.
 
 `evaluation/run_boundary_tests.sh` + `check_boundaries.py`: 18/18 finite-word
 boundary checks pass with the tool rebuilt from `tool/` on 2026-10-12.
-`evaluation/test_tck_product_acceptance.py`: regression test of the converter
-for CASAAL automata without acceptance marks (X74).
+`evaluation/test_tck_product_acceptance.py`: regression test of the reading of
+CASAAL automata without acceptance marks (`tck_product.py`).
 
 ## 5. UPPAAL (re-run 2026-10-11)
 
@@ -183,14 +183,14 @@ comparable with the grouped column of the translation article for the F and R fa
   9 without conclusion (R4–R6, N5, N6; R7, R8, N7, N8 tool timeouts); no
   disagreement. All unchanged.
 - Random formulas (`random_diff.tsv`): all empty on 96, four with partial
-  timeouts (X31, X62, X64, X83), none non-empty; X74 is now empty (acceptance
-  convention for unmarked CASAAL automata, `tck_product.py`).
+  timeouts (X31, X62, X64, X83), none non-empty (CASAAL automata without an
+  acceptance mark are read by their state labels, `tck_product.py`).
   `random_opt.tsv`: input/optimized/exported transitions 2,507 / 1,526 / 1,564;
   `init_free` fails on X35, X38, X65, X84, X100 (previously four).
 - Article text updated: optimizer aggregates, family breakdown, symbolic
   counts, R6 timings, F11 running example (input now 4/7/2, figure renumbered),
   export-policy table and RSS, spot-level paragraph, TChecker before/after
-  table, validation section (random formulas, X74), supplement statistics.
+  table, validation section (random formulas), supplement statistics.
 
 ## 12. Run of 2026-10-13/14: merging of locations under the entry invariant
 

@@ -46,14 +46,19 @@ explains this difference; this article compares its optimized output with
 CASAAL's in symbolic transitions (grouping by source, target, guard, resets).
 Neither article treats CASAAL as an optimizer baseline.
 
-## X74 (random formulas)
+## Unmarked CASAAL automata (random formulas)
 
-φ = ◇(q ∧ r) → ¬p. Under mutual exclusion, ¬φ = ◇(q ∧ r) ∧ p is
-unsatisfiable; our automaton for ¬φ has no accepting location. The CASAAL
-output read by the converter has states labeled with the pending eventuality
-`F(q & r)` but no acceptance mark; the converter reads an unmarked automaton
-as accepting every infinite run, so P1 is non-empty. The same behavior was
-reproduced on F(q) ∧ G(¬q) earlier. This is an acceptance-marking / format
-issue in the comparison, not a parsing (parenthesization) problem: the
-CASAAL input and its node labels show the intended structure. Reported as
-inconclusive.
+CASAAL prints some automata without any acceptance mark. `tck_product.py`
+reads such an automaton by its state labels: a state whose label contains an
+unbounded eventuality (`F` or `U` without an upper bound, including
+lower-bounded `F[x>d]`, `U[x>=d]`) is not accepting; the other states are
+accepting; with no accepting state the language is empty. An automaton without
+such labels is read as accepting every infinite run. This is our
+interpretation of CASAAL's output, not a documented convention. The rule
+changes the reading of 16 of the CASAAL files in `casaal_out_rand`. The
+verdicts of the TChecker products depend on the reading for one formula only,
+X74 = ◇(q ∧ r) → ¬p: its negation is unsatisfiable under mutual exclusion, our
+automaton for it has no accepting location, and CASAAL prints its automaton
+without a mark; under the alternative reading (every unmarked automaton
+accepts every run) P1 of X74 is non-empty. Regression test:
+`evaluation/test_tck_product_acceptance.py`.

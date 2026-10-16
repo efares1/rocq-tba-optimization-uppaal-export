@@ -17,12 +17,8 @@ complement automaton and is not claimed here.
 \item \textbf{Random formulas.} The repository records 100 generated formulas of depth at most three over three propositions. With a 120-second bound per product check, comparison products are empty for 96 formulas; for the other four, the checks that finish report emptiness and the remaining ones do not conclude. No product is nonempty.
 \item \textbf{Implementation checks.} Eighteen finite-word simulator checks exercise strict and non-strict boundaries and overlapping activations. They pass and validate selected output behaviors; they do not replace the mechanized proof.
 \end{itemize}
-One random formula, $\Diamond(q\land r)\Rightarrow\neg p$, first gave a
-nonempty product. Its negation is unsatisfiable on the common one-event
-domain, so our automaton has no accepting location, but the CASAAL output
-has no acceptance mark and the conversion script read an unmarked automaton
-as accepting every infinite run. The script now treats a state whose label
-contains an unbounded eventuality ($\mathsf F$ or $\mathsf U$) as
-non-accepting when no mark is printed, and the product is empty. This
-reading is our interpretation of CASAAL's output; a regression test is in
-\path{evaluation/test_tck_product_acceptance.py}.
+CASAAL prints some automata without any acceptance mark. We read such an
+automaton by its state labels (a state with an undischarged unbounded
+eventuality is not accepting), which is our interpretation of CASAAL's output,
+not a documented convention; the verdicts of the products depend on this reading
+for one random formula only.

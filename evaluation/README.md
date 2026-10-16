@@ -7,8 +7,7 @@ boundary tests, Spot validation, interface check, acceptance encodings, random
 formulas, export policies, TChecker comparisons, random differences, symbolic
 before/after) with the tool of `../tool`, after the change of the printing of
 the negated event atom (`!"p"`, option `-explicit-neg`, default; `-indep-neg`
-is the previous printing) and of the acceptance convention for unmarked CASAAL
-automata in `tck_product.py`.  The log is `run_all.log`; the tables are
+is the previous printing).  The log is `run_all.log`; the tables are
 regenerated with `make_tables.py`, `make_optimizer_table.py`,
 `make_optimizer_aggregate_table.py`, `make_symbolic_before_after.py` and
 `make_export_policies_table.py`.  Not repeated: the synthetic TBA suite and
@@ -128,15 +127,13 @@ The run is archived in `runs/2026-10-14-full-eval-v3/`.
     `run_random_diff.sh`: P1, P2, S with a limit of 120 s
     (`random_diff.tsv`).  Result (2026-10-13/14): all empty on 96 formulas; on 4
     formulas (X31, X62, X64, X83), some checks do not conclude within the
-    limit and the others report emptiness; none is non-empty.  X74 was
-    non-empty for P1 with the first version of `tck_product.py`: CASAAL
-    prints no acceptance mark for the eventuality <>(q & r), which no
-    transition fulfills on the common domain, and the script read an
-    automaton without marks as accepting every run.  The script now treats a
-    state whose label has an unbounded F or U as non-accepting (the language
-    is empty if no state is accepting) when no mark is printed; the regression
-    test is `test_tck_product_acceptance.py`.  The reading is an
-    interpretation of CASAAL's output.
+    limit and the others report emptiness; none is non-empty.  CASAAL
+    prints some automata without an acceptance mark; `tck_product.py` reads
+    such an automaton by its state labels (a state whose label has an
+    unbounded F or U is not accepting; the language is empty if no state is
+    accepting).  The reading is an interpretation of CASAAL's output, and the
+    verdict of one formula (X74) depends on it; the regression test is
+    `test_tck_product_acceptance.py`.
   - `case_study/liveness_case.sh`: liveness use of the exported automaton:
     the automaton of the negation of [](p -> <> q) composed with a system that
     answers within 4 time units (empty product) and with one that may stay

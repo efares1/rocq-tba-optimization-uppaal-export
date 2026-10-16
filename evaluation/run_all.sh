@@ -1,8 +1,7 @@
 #!/bin/bash
 # Re-run of the tool-dependent evaluation after the change of the printing of
 # the negated event atom (!"p" instead of "!p", option -indep-neg for the
-# previous printing) and of the acceptance convention for unmarked CASAAL
-# automata (tck_product.py).
+# previous printing).
 #
 #   bash run_all.sh                       # all steps below, in order
 #   STEPS="full noweak" bash run_all.sh   # a subset
